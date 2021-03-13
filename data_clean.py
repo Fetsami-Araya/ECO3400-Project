@@ -8,3 +8,88 @@ going to be used to train the machine learning nowcasting models.
 # Imports
 import numpy as np
 import pandas as pd
+
+
+def readCEER():
+    """
+    Create dataframe of canadian effective exchange rate data
+    """
+    return
+
+def readCPI():
+    """
+    Create dataframe of Consumer Price Index data
+    """
+    return
+
+def readCrude():
+    """
+    Create dataframe of Crude Oil Price Data
+    """
+    return
+
+def readExports():
+    """
+    Create dataframe of exports data
+    """
+    return
+
+def finalConsumption():
+    """
+    Create dataframe of final consumption data
+    """
+    return
+
+def readGSPTSE():
+    """
+    Create dataframe of S&P/TSX composite data
+    """
+    return
+
+def readHousingStarts():
+    """
+    Create dataframe of housing starts data
+    """
+    return
+
+def readInitialJobless():
+    """
+    Create dataframe of initial jobless claims data
+    """
+    return
+
+def readIPPI():
+    """
+    Create dataframe of industrial product price index data
+    """
+    return
+
+def readPolicyRates():
+    """
+    Create dataframe of Bank of Canada daily nominal interest rate data
+    """
+    return
+
+def readGDP():
+    """
+    Create dataframe of real GDP data
+    """
+    return
+
+def readRetailTrade():
+    """
+    Create dataframe of retail trade data
+    """
+    return
+
+def readUnemployment():
+    """
+    Create dataframe of unemployment data
+    """
+    return
+
+def createMasterData():
+    """
+    Create master data set of all series
+    """
+    return
