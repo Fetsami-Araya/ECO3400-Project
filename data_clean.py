@@ -88,6 +88,18 @@ def readUnemployment():
     """
     return
 
+def readWCS():
+    """
+    Create dataframe for Western Canadian Standard oil prices
+    """
+    return
+
+def readCAN10Y():
+    """
+    Create dataframe of Canadian 10-Year government bond yields
+    """
+    return
+
 def createMasterData():
     """
     Create master data set of all series
