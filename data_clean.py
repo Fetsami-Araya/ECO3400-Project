@@ -202,7 +202,7 @@ def readMktIncome():
     mktincome['REF_DATE'] = pd.to_datetime(mktincome['REF_DATE'],format='%Y')
     mktincome.columns = ['date','Median Market Income']
     mktincome = mktincome.set_index('date')
-    return mktincome
+    return mktincome.resample('D').ffill()
 
 def readPopulation():
     file_name = './data/population.csv'
@@ -215,7 +215,16 @@ def readGoogleTrends():
     google_trends.columns = ['date','Unemployment Searches GT']
     google_trends['date'] = pd.to_datetime(google_trends['date'])
     google_trends = google_trends.set_index('date')
-    return google_trends
+    return google_trends.resample('D').ffill()
+
+def readCADUSD():
+    file_name = './data/DEXCAUS.csv'
+    cadusd = pd.read_csv(file_name)
+    cadusd.columns = ['date','CAD/USD']
+    cadusd['date'] = pd.to_datetime(cadusd['date'])
+    cadusd = cadusd.set_index('date')
+    return cadusd.resample('D').ffill()
+
 
 def createMasterData():
     """
@@ -236,9 +245,12 @@ def createMasterData():
     retail = readRetailTrade()
     unemployment = readUnemployment()
     wcs = readWCS()
+    mktincome = readMktIncome()
+    cadusd = readCADUSD()
+
     print('\n','BEGINNING MERGE','\n')
-    all_series_no_gdp = [unemployment, cpi, exports, 
-                consumption, gsptse, housing, 
+    all_series_no_gdp = [unemployment, cpi, exports,
+                consumption, gsptse, housing, cadusd,
                 jobless, ippi, rates, can10y,
                 retail, ceer, wcs]
     
