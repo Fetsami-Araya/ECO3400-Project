@@ -1,0 +1,73 @@
+﻿"Crime severity index and weighted clearance rates, Canada, provinces, territories and Census Metropolitan Areas" 1 2 3 4 5 6
+"Annual"
+"Table: 35-10-0026-01 (formerly CANSIM 252-0052)"
+"Geography: Canada, Province or territory, Census metropolitan area, Census metropolitan area part"
+
+"","Canada 8 (map)",,,,,,,,,,,,,,,,,,,,,
+"Statistics","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019"
+"","Index",,,,,,,,,,,,,,,,,,,,,
+"Crime severity index 9 10 11 12","118.84","111.24","106.73","105.30","104.14","106.84","104.11","101.33","100.00","95.28","90.57","87.77","82.94","77.61","75.51","68.92","66.90","70.39","72.01","73.60","75.63","79.45"
+"","Percent",,,,,,,,,,,,,,,,,,,,,
+"Percent change in crime severity index 13","..","-6.40","-4.05","-1.34","-1.10","2.59","-2.56","-2.67","-1.31","-4.72","-4.94","-3.09","-5.50","-6.43","-2.71","-8.73","-2.93","5.22","2.30","2.21","2.76","5.05"
+"","Index",,,,,,,,,,,,,,,,,,,,,
+"Violent crime severity index 12 14","97.80","99.36","97.79","97.20","96.20","97.56","96.01","98.52","100.00","97.78","95.07","94.29","89.22","85.72","81.95","74.02","70.71","75.34","76.88","81.28","83.57","89.67"
+"","Percent",,,,,,,,,,,,,,,,,,,,,
+"Percent change in violent crime severity index 13","..","1.60","-1.58","-0.60","-1.03","1.41","-1.59","2.61","1.50","-2.22","-2.77","-0.82","-5.38","-3.92","-4.40","-9.68","-4.47","6.55","2.04","5.72","2.82","7.30"
+"","Index",,,,,,,,,,,,,,,,,,,,,
+"Non-violent crime severity index 12 15","126.93","115.80","110.17","108.41","107.19","110.40","107.22","102.41","100.00","94.31","88.85","85.26","80.53","74.50","73.01","66.92","65.38","68.44","70.10","70.67","72.59","75.59"
+"","Percent",,,,,,,,,,,,,,,,,,,,,
+"Percent change in non-violent crime severity index 13","..","-8.77","-4.86","-1.60","-1.13","2.99","-2.88","-4.49","-2.35","-5.69","-5.79","-4.04","-5.55","-7.49","-2.00","-8.34","-2.30","4.68","2.43","0.81","2.72","4.13"
+"","Index",,,,,,,,,,,,,,,,,,,,,
+"Youth crime severity index 12 16 17","110.24","99.34","103.53","105.96","101.10","106.03","100.84","97.31","100.00","101.45","95.66","95.55","90.01","81.72","77.42","66.16","60.62","60.42","59.89","62.68","56.59","54.55"
+"","Percent",,,,,,,,,,,,,,,,,,,,,
+"Percent change in youth crime severity index 18","..","-9.89","4.22","2.35","-4.59","4.88","-4.89","-3.50","2.76","1.45","-5.71","-0.11","-5.80","-9.21","-5.26","-14.54","-8.37","-0.33","-0.88","4.66","-9.72","-3.60"
+"","Index",,,,,,,,,,,,,,,,,,,,,
+"Youth violent crime severity index 12 19","86.59","83.51","89.31","91.38","87.26","92.62","87.84","94.11","100.00","102.05","95.73","96.69","93.24","87.47","82.34","71.23","64.84","66.39","70.93","80.51","77.06","78.82"
+"","Percent",,,,,,,,,,,,,,,,,,,,,
+"Percent change in youth violent crime severity index 18","..","-3.56","6.95","2.32","-4.51","6.14","-5.16","7.14","6.26","2.05","-6.19","1.00","-3.57","-6.19","-5.86","-13.49","-8.97","2.39","6.84","13.51","-4.29","2.28"
+"","Index",,,,,,,,,,,,,,,,,,,,,
+"Youth non-violent crime severity index 12 20","128.25","111.40","114.36","117.07","111.65","116.23","110.74","99.75","100.00","100.99","95.61","94.68","87.56","77.29","73.59","62.27","57.37","55.93","51.80","49.93","42.11","37.48"
+"","Percent",,,,,,,,,,,,,,,,,,,,,
+"Percent change in youth non-violent crime severity index 18","..","-13.14","2.66","2.37","-4.63","4.10","-4.72","-9.92","0.25","0.99","-5.33","-0.97","-7.52","-11.73","-4.79","-15.38","-7.87","-2.51","-7.38","-3.61","-15.66","-11.00"
+"","Number",,,,,,,,,,,,,,,,,,,,,
+"Weighted clearance rate 21","34.06","35.18","35.51","34.98","34.53","33.54","33.58","34.55","35.71","36.48","37.93","38.65","39.65","40.34","40.59","41.00","40.47","39.35","39.55","39.88","38.65","36.67"
+"","Percent",,,,,,,,,,,,,,,,,,,,,
+"Percent change in weighted clearance rate 18","..","3.29","0.94","-1.49","-1.29","-2.87","0.12","2.89","3.36","2.16","3.97","1.90","2.59","1.74","0.62","1.01","-1.29","-2.77","0.51","0.83","-3.08","-5.12"
+"","Number",,,,,,,,,,,,,,,,,,,,,
+"Violent weighted clearance rate","55.66","57.28","58.24","58.64","57.77","56.44","56.25","56.80","57.77","57.88","58.97","59.65","60.56","60.99","62.32","63.12","64.14","62.72","63.48","63.68","61.52","57.58"
+"","Percent",,,,,,,,,,,,,,,,,,,,,
+"Percent change in violent weighted clearance rate 18","..","2.91","1.68","0.69","-1.48","-2.30","-0.34","0.98","1.71","0.19","1.88","1.15","1.53","0.71","2.18","1.28","1.62","-2.21","1.21","0.32","-3.39","-6.40"
+"","Number",,,,,,,,,,,,,,,,,,,,,
+"Non-violent weighted clearance rate","27.66","27.89","27.75","26.82","26.51","25.76","25.77","26.32","27.22","27.94","29.27","29.72","30.74","31.69","31.71","32.10","31.16","29.99","30.12","30.04","29.19","27.74"
+"","Percent",,,,,,,,,,,,,,,,,,,,,
+"Percent change in non-violent weighted clearance rate 18","..","0.83","-0.50","-3.35","-1.16","-2.83","0.04","2.13","3.42","2.65","4.76","1.54","3.43","3.09","0.06","1.23","-2.93","-3.75","0.43","-0.27","-2.83","-4.97"
+
+Symbol legend:
+..,not available for a specific reference period,
+
+Footnotes:
+1,"The crime severity index is calculated using Incident-based Uniform Crime Reporting Survey (UCR2) data. For the period from 1998 to 2017 Incident-based UCR2 data are not available for all respondents. In order to report this level of detail for police services still reporting to the Aggregate Uniform Crime Reporting Survey (UCR) over this time, a process of imputation was applied to derive counts for violations that do not exist on their own in the aggregate survey. For approximately 80% of the aggregate offence codes, there is a 1:1 mapping with a new incident-based violation code. For violations where this was not the case, such as the aggregate other Criminal Code category, it was necessary to estimate (impute) this figure using the distribution of other Criminal Code offences from existing Incident-based UCR2 respondents."
+2,"During the production of each year's crime statistics, data from the previous year are revised to reflect any updates or changes that have been received from the police services."
+3,"The methodology for calculating census metropolitan area (CMA) populations was modified in 2003. Starting in 1996, the populations for CMAs have been adjusted to reflect the actual policing boundaries within the CMA and do not reflect the official Statistics Canada population for these CMAs. CMA data are included within province-level data."
+4,"Police reported statistics may be affected by differences in the way police services deal with minor offences. In some instances, police or municipalities might chose to deal with some minor offences using municipal by-laws or provincial provisions rather than Criminal Code provisions. Counts are based on the most serious violation in the incident."
+5,"In January 2018, the Uniform Crime Reporting Survey (UCR) definitions of “founded” and “unfounded” criminal incidents were updated to reflect a more victim-centred approach for recording crimes that consider the complexities of certain offences such as sexual assault, family violence and intimate partner violence. Under the new reporting standards, specific offences may be more likely reported by police as founded rather than unfounded (or unsubstantiated), which would exclude them from police-reported crime rates and crime severity indices. Data for 2019 represent the first complete year of UCR data collected under the new reporting standards.  As a result, for selected violations and police services, the actual proportion of incidents in 2019 that were classified as “not cleared” has increased. Use caution when comparing these data with prior years."
+6,"A high crime rate or Crime Severity Index (CSI) may indicate that a municipality is a geographical area that provides commercial business, human or public services, or entertainment for many people who reside outside, as well as inside, the municipality. As a result, these municipalities may have large part-time or temporary populations which are excluded from both their population bases and their crime rate and CSI calculations."
+7,"With the release of 2012 data, revised population estimates at the respondent level were applied back to and including 2004. This resulted in boundary changes for the census metropolitan area (CMA) of Saint John for 2005 to 2011 and for Winnipeg for 2011. Crime data for these years for these respondents have therefore been revised."
+8,"In 2012, it was discovered that the Montreal Police Service had been incorrectly applying the agreed upon definition for reporting child pornography incidents to the Uniform Crime Reporting Survey (UCR2). As such, the number of violations has been revised for the years 2008 to 2011."
+9,"The crime severity index includes all Criminal Code violations including traffic, as well as drug violations and all Federal Statutes."
+10,"The Crime Severity Index (CSI) measures changes in the level of severity of crime in Canada from year to year. In the index, all crimes are assigned a weight based on their seriousness. The level of seriousness is based on actual sentences handed down by the courts in all provinces and territories. More serious crimes are assigned higher weights, less serious offences lower weights. As a result, more serious offences have a greater impact on changes in the index. The PRCSI is standardized to 100 in base year 2006. CSI weights are updated using data from the Integrated Criminal Courts Survey (ICCS) every 5 years.  2017 marks the second update to the CSI weights since 1998.  2016 revised and 2017 CSI data are presented here using the updated weights and may have a marginal impact on the CSI data itself."
+11,"The Crime Severity Index is not available for police services or detachments with populations less than 1,000. Data for police services or detachments with populations less than 5,000 should be used with caution."
+12,"Population figures reflect only the permanent or resident population of a jurisdiction. Where a jurisdiction serves as the centre for commercial businesses, human or public services, or entertainment, it may have substantial “part-time” populations, e.g., tourists, cabin owners, commuters, students, and seasonal staff. These temporary populations, whose permanent residence is within another jurisdiction, are excluded from a jurisdiction’s population figures. This may be a factor to consider when examining the crime rate and Crime Severity Index for some municipalities."
+13,This represents the year-over-year (current year over last year) percentage change.
+14,"The violent crime severity index includes all Incident-based Uniform Crime Reporting Survey (UCR2) violent violations, some of which were not previously included in the aggregate violent crime category, including uttering threats, criminal harassment and forcible confinement."
+15,"The non-violent crime severity index includes all non-violent Criminal Code violations including traffic, as well as drug violations and all Federal Statutes."
+16,"The Youth Crime Severity Index is based on the same principles as the Overall Crime Severity Index, which reflects the relative seriousness of different offences, but uses the number of youths accused instead of an incident count."
+17,There is no youth crime severity index data available for census metropolitan areas (CMAs).
+18,This represents the year-over-year (current year over last year) percentage change.
+19,"The youth violent crime severity index includes all Incident-based Uniform Crime Reporting Survey (UCR2) violent violations, some of which were not previously included in the aggregate violent crime category, including uttering threats, criminal harassment and forcible confinement."
+20,"The youth non-violent crime severity index includes all non-violent Criminal Code violations including traffic, as well as drug violations and all Federal Statutes."
+21,"The weighted clearance rate is based on the same principles as the Police Reported Crime Severity Index (CSI), whereby more serious offences are assigned a higher ""weight"" than less serious offences. For example, the clearing of homicides, robberies or break and enters would represent a greater contribution to the overall weighted clearance rate value than the clearing of minor theft, mischief or disturbing the peace."
+
+"How to cite: Statistics Canada. Table 35-10-0026-01 Crime severity index and weighted clearance rates, Canada, provinces, territories and Census Metropolitan Areas"
+https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3510002601
+DOI: https://doi.org/10.25318/3510002601-eng
