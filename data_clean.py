@@ -189,6 +189,34 @@ def readCAN10Y():
     can10y = can10y.set_index('date')
     return can10y.resample('D').ffill()
 
+def readManufacturing():
+    file_name = './data/'
+    manufacturing = pd.read_csv(file_name)
+    return
+
+def readMktIncome():
+    file_name = './data/medianMarketIncome.csv'
+    mktincome = pd.read_csv(file_name)
+    mktincome = mktincome[(mktincome["Income concept"]=='Median market income')&(mktincome['Economic family type']=="Economic families and persons not in an economic family")&(mktincome['UOM']=="2018 constant dollars")]
+    mktincome = mktincome[['REF_DATE','VALUE']]
+    mktincome['REF_DATE'] = pd.to_datetime(mktincome['REF_DATE'],format='%Y')
+    mktincome.columns = ['date','Median Market Income']
+    mktincome = mktincome.set_index('date')
+    return mktincome
+
+def readPopulation():
+    file_name = './data/population.csv'
+    pop = pd.read_csv(file_name)
+    return pop
+
+def readGoogleTrends():
+    file_name = './data/unemploymentsearchGT.csv'
+    google_trends = pd.read_csv(file_name,skiprows = 2)
+    google_trends.columns = ['date','Unemployment Searches GT']
+    google_trends['date'] = pd.to_datetime(google_trends['date'])
+    google_trends = google_trends.set_index('date')
+    return google_trends
+
 def createMasterData():
     """
     Create master data set of all series
