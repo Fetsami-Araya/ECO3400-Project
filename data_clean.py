@@ -36,7 +36,7 @@ def readCPI():
     cpi = cpi.set_index('date')
     return cpi.resample('D').ffill()
 
-def readExports():
+def readExportsImports():
     """
     Create dataframe of exports data
     """
@@ -47,7 +47,17 @@ def readExports():
     exports['REF_DATE'] = pd.to_datetime(exports['REF_DATE'])
     exports.columns = ['date','Exports']
     exports = exports.set_index('date')
-    return exports.resample('D').ffill()
+    exports = exports.resample('D').ffill()
+
+    imports = pd.read_csv(file_name)
+    imports = imports[imports['Trade']=='Import']
+    imports = imports[['REF_DATE','VALUE']]
+    imports['REF_DATE'] = pd.to_datetime(imports['REF_DATE'])
+    imports.columns = ['date','Imports']
+    imports = imports.set_index('date')
+    imports = imports.resample('D').ffill()
+
+    return exports, imports
 
 def readConsumption():
     """
@@ -169,9 +179,9 @@ def readWCS():
     """
     file_name = './data/WCS.csv'
     all_oil = pd.read_csv(file_name)
-    WTI = all_oil[all_oil['Type']=='WTI']
+    WTI = all_oil[all_oil['Type']=='WCS']
     WTI = WTI[['When','Alberta']]
-    WTI.columns = ['date','WTI']
+    WTI.columns = ['date','WCS']
     WTI['date'] = pd.to_datetime(WTI['date'])
     WTI = WTI.set_index('date')
     WTI = WTI.resample('D').ffill()
@@ -207,7 +217,11 @@ def readMktIncome():
 def readPopulation():
     file_name = './data/population.csv'
     pop = pd.read_csv(file_name)
-    return pop
+    pop = pop[['REF_DATE','VALUE']]
+    pop['REF_DATE'] = pd.to_datetime(pop['REF_DATE'])
+    pop.columns = ['date','Population']
+    pop = pop.set_index('date')
+    return pop.resample('D').ffill()
 
 def readGoogleTrends():
     file_name = './data/unemploymentsearchGT.csv'
@@ -225,6 +239,66 @@ def readCADUSD():
     cadusd = cadusd.set_index('date')
     return cadusd.resample('D').ffill()
 
+def readAvgWeeklyEarnings():
+    file_name = './data/avgWeeklyEarnings.csv'
+    earnings = pd.read_csv(file_name)
+    earnings = earnings[['REF_DATE','VALUE']]
+    earnings.columns = ['date','Avg. Weekly Earnings']
+    earnings['date'] = pd.to_datetime(earnings['date'])
+    earnings = earnings.set_index('date')
+    return earnings.resample('D').ffill()
+
+def readBOC():
+    def readOneSeries(series,shorthand,boc):
+        df = boc[boc["Financial market statistics"]==series]
+        df = df[['REF_DATE','VALUE']]
+        df.columns = ['date',shorthand]
+        df['date'] = pd.to_datetime(df['date'])
+        df = df.set_index('date')
+        return df.resample('D').ffill()
+
+    file_name = './data/BOC.csv'
+    boc = pd.read_csv(file_name,na_values=[0])
+    series = {'Target rate':'Target Rate',
+            "Government of Canada marketable bonds, over 10 years":'Over 10Y Bond'}
+    
+    dataframes =[]
+
+    for key, value in series.items():
+        dataframes.append(readOneSeries(key,value,boc))
+    
+    target, tenyearbond = dataframes
+    target  = target.resample('D').ffill().dropna()
+    tenyearbond = tenyearbond.resample('D').ffill().dropna()
+    return target, tenyearbond
+
+def readCrimeSeverity():
+    file_name = './data/crimeSeverity.csv'
+    crime = pd.read_csv(file_name)
+    crime = crime[['REF_DATE','VALUE']]
+    crime.columns = ['date','Crime Severity']
+    crime['date'] = pd.to_datetime(crime['date'],format='%Y')
+    crime = crime.set_index('date')
+    return crime.resample('D').ffill()
+
+def readInvestment():
+    file_name = './data/investment.csv'
+    investment = pd.read_csv(file_name)
+    investment = investment[investment["Estimates"]=="Gross fixed capital formation"]
+    investment = investment[['REF_DATE','VALUE']]
+    investment['REF_DATE'] = pd.to_datetime(investment['REF_DATE'])
+    investment.columns = ['date','Gross Fixed Capital Formation']
+    investment = investment.set_index('date')
+    return investment.resample('D').ffill()
+
+def readMedianAge():
+    file_name = './data/medianAge.csv'
+    age = pd.read_csv(file_name)
+    age = age[['REF_DATE','VALUE']]
+    age.columns = ['date','Median Age']
+    age['date'] = pd.to_datetime(age['date'],format='%Y')
+    age = age.set_index('date')
+    return age.resample('D').ffill()
 
 def createMasterData():
     """
@@ -232,10 +306,10 @@ def createMasterData():
     """
     print('READING IN RAW DATA','\n')
     can10y = readCAN10Y()
-    ceer = readCEER()
     cpi = readCPI()
-    exports = readExports()
+    exports, imports = readExportsImports()
     consumption = readConsumption()
+    population = readPopulation()
     gsptse = readGSPTSE()
     housing = readHousingStarts()
     jobless = readInitialJobless()
@@ -247,12 +321,18 @@ def createMasterData():
     wcs = readWCS()
     mktincome = readMktIncome()
     cadusd = readCADUSD()
+    earnings = readAvgWeeklyEarnings()
+    target, tenyearbond = readBOC()
+    crime = readCrimeSeverity()
+    google_trends = readGoogleTrends()
+    investment = readInvestment()
+    median_age = readMedianAge()
 
     print('\n','BEGINNING MERGE','\n')
-    all_series_no_gdp = [unemployment, cpi, exports,
-                consumption, gsptse, housing, cadusd,
-                jobless, ippi, rates, can10y,
-                retail, ceer, wcs]
+    all_series_no_gdp = [unemployment, cpi, population, exports, imports,
+                consumption, gsptse, housing, cadusd, mktincome,
+                jobless, ippi, rates, can10y, earnings, target, tenyearbond, investment,
+                median_age, crime, retail, wcs, google_trends]
     
     # Using repeated joins to maximize data retention.
     for df in all_series_no_gdp:
