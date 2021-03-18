@@ -200,9 +200,14 @@ def readCAN10Y():
     return can10y.resample('D').ffill()
 
 def readManufacturing():
-    file_name = './data/'
+    file_name = './data/manufacturing.csv'
     manufacturing = pd.read_csv(file_name)
-    return
+    manufacturing = manufacturing[(manufacturing['Principal statistics']=="Sales of goods manufactured (shipments)")&(manufacturing["Seasonal adjustment"]=="Seasonally adjusted")]
+    manufacturing = manufacturing[['REF_DATE','VALUE']]
+    manufacturing.columns = ['date','Manufacturing']
+    manufacturing['date'] = pd.to_datetime(manufacturing['date'])
+    manufacturing = manufacturing.set_index('date')
+    return manufacturing.resample('D').ffill()
 
 def readMktIncome():
     file_name = './data/medianMarketIncome.csv'
@@ -327,12 +332,13 @@ def createMasterData():
     google_trends = readGoogleTrends()
     investment = readInvestment()
     median_age = readMedianAge()
+    manufacturing = readManufacturing()
 
     print('\n','BEGINNING MERGE','\n')
-    all_series_no_gdp = [unemployment, cpi, population, exports, imports,
-                consumption, gsptse, housing, cadusd, mktincome,
-                jobless, ippi, rates, can10y, earnings, target, tenyearbond, investment,
-                median_age, crime, retail, wcs, google_trends]
+    all_series_no_gdp = [exports, imports, consumption, investment,
+                population, median_age, mktincome, crime, cpi, ippi,
+                housing, unemployment, google_trends, earnings, retail, manufacturing, jobless,
+                wcs, gsptse, cadusd, tenyearbond, target]
     
     # Using repeated joins to maximize data retention.
     for df in all_series_no_gdp:
