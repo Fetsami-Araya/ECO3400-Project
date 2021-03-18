@@ -233,7 +233,7 @@ def readGoogleTrends():
 
 def readCADUSD():
     file_name = './data/DEXCAUS.csv'
-    cadusd = pd.read_csv(file_name)
+    cadusd = pd.read_csv(file_name,na_values=['.'])
     cadusd.columns = ['date','CAD/USD']
     cadusd['date'] = pd.to_datetime(cadusd['date'])
     cadusd = cadusd.set_index('date')
@@ -348,9 +348,8 @@ def createMasterData():
 
 master_data, master_data_some_na, master_data_no_na = createMasterData()
 
-print('\n\n','\t\t\t\t\t\t\t\t RAW','\n\n',
-    master_data,
- '\n\n','\t\t\t\t\t\t\t\t SOME NAs','\n\n',
- master_data_some_na, 
- '\n\n','\t\t\t\t\t\t\t\t NO NAs','\n\n',
- master_data_no_na)
+print('\n\n','\t\t\t\t\t\t\t\t RAW','\n\n',master_data,'\n\n','\t\t\t\t\t\t\t\t SOME NAs','\n\n',master_data_some_na, '\n\n','\t\t\t\t\t\t\t\t NO NAs','\n\n', master_data_no_na)
+master_data.info()
+print('SAVING TO .csv')
+master_data.to_csv('master_data_og.csv')
+master_data_no_na.to_csv('master_data_no_na.csv')
