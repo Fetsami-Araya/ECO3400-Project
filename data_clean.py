@@ -310,7 +310,6 @@ def createMasterData():
     Create master data set of all series
     """
     print('READING IN RAW DATA','\n')
-    can10y = readCAN10Y()
     cpi = readCPI()
     exports, imports = readExportsImports()
     consumption = readConsumption()
@@ -319,7 +318,6 @@ def createMasterData():
     housing = readHousingStarts()
     jobless = readInitialJobless()
     ippi = readIPPI()
-    rates = readPolicyRates()
     gdp = readGDP()
     retail = readRetailTrade()
     unemployment = readUnemployment()
