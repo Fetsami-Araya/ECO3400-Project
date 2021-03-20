@@ -305,6 +305,28 @@ def readMedianAge():
     age = age.set_index('date')
     return age.resample('D').ffill()
 
+def readSavingsRate():
+    file_name = './data/savings_disposable_income.csv'
+    savings = pd.read_csv(file_name)
+    savings = savings[savings['Estimates']=="Equals: national saving rate"]
+    savings = savings[['REF_DATE','VALUE']]
+    savings.columns = ['date','Savings Rate']
+    savings['date'] = pd.to_datetime(savings['date'])
+    savings = savings.set_index('date')
+    savings = savings.resample('D').ffill()
+
+    disposable_income = pd.read_csv(file_name)
+    disposable_income = disposable_income[disposable_income['VECTOR']=="v62305869"]
+    disposable_income = disposable_income[['REF_DATE','VALUE']]
+    disposable_income.columns = ['date','Household Disposable Income']
+    disposable_income['date'] = pd.to_datetime(disposable_income['date'])
+    disposable_income = disposable_income.set_index('date')
+    disposable_income = disposable_income.resample('D').ffill()
+
+    return savings, disposable_income
+
+
+
 def createMasterData():
     """
     Create master data set of all series
@@ -331,12 +353,13 @@ def createMasterData():
     investment = readInvestment()
     median_age = readMedianAge()
     manufacturing = readManufacturing()
+    savings_rate, disposable_income = readSavingsRate()
 
     print('\n','BEGINNING MERGE','\n')
     all_series_no_gdp = [exports, imports, consumption, investment,
                 population, median_age, mktincome, crime, cpi, ippi,
                 housing, unemployment, google_trends, earnings, retail, manufacturing, jobless,
-                wcs, gsptse, cadusd, tenyearbond, target]
+                wcs, gsptse, cadusd, tenyearbond, target,savings_rate, disposable_income]
     
     # Using repeated joins to maximize data retention.
     for df in all_series_no_gdp:
@@ -353,6 +376,7 @@ def createMasterData():
 master_data, master_data_some_na, master_data_no_na = createMasterData()
 
 print('\n\n','\t\t\t\t\t\t\t\t RAW','\n\n',master_data,'\n\n','\t\t\t\t\t\t\t\t SOME NAs','\n\n',master_data_some_na, '\n\n','\t\t\t\t\t\t\t\t NO NAs','\n\n', master_data_no_na)
+print('\n\n','DATAFRAME INFO','\n\n')
 master_data.info()
 print('SAVING TO .csv (na and no na)')
 master_data.to_csv('./data/master_data_og.csv')
