@@ -11,18 +11,6 @@ import numpy as np
 import pandas as pd
 
 
-def readCEER():
-    """
-    Create dataframe of canadian effective exchange rate data
-    """
-    file_name = './data/CEER.csv'
-    ceer = pd.read_csv(file_name,skiprows=11)
-    ceer['date'] = pd.to_datetime(ceer['date'])
-    ceer = ceer.iloc[:,:2]
-    ceer = ceer.set_index('date')
-    ceer.columns = ['CEER']
-    return ceer.resample('D').ffill()
-
 def readCPI():
     """
     Create dataframe of Consumer Price Index data
@@ -47,6 +35,7 @@ def readExportsImports():
     exports['REF_DATE'] = pd.to_datetime(exports['REF_DATE'])
     exports.columns = ['date','Exports']
     exports = exports.set_index('date')
+    exports = exports.shift(periods=1)
     exports = exports.resample('D').ffill()
 
     imports = pd.read_csv(file_name)
@@ -55,6 +44,7 @@ def readExportsImports():
     imports['REF_DATE'] = pd.to_datetime(imports['REF_DATE'])
     imports.columns = ['date','Imports']
     imports = imports.set_index('date')
+    imports = imports.shift(periods=1)
     imports = imports.resample('D').ffill()
 
     return exports, imports
@@ -70,6 +60,7 @@ def readConsumption():
     consumption['REF_DATE'] = pd.to_datetime(consumption['REF_DATE'])
     consumption.columns = ['date','Consumption']
     consumption = consumption.set_index('date')
+    consumption = consumption.shift(periods=1)
     return consumption.resample('D').ffill()
 
 def readGSPTSE():
@@ -95,6 +86,7 @@ def readHousingStarts():
     starts['REF_DATE'] = pd.to_datetime(starts['REF_DATE'])
     starts.columns = ['date','Housing Starts']
     starts = starts.set_index('date')
+    starts = starts.shift(1)
     return starts.resample('D').ffill()
 
 def readInitialJobless():
@@ -121,18 +113,9 @@ def readIPPI():
     IPPI['REF_DATE'] = pd.to_datetime(IPPI['REF_DATE'])
     IPPI.columns = ['date','IPPI']
     IPPI = IPPI.set_index('date')
+    IPPI = IPPI.shift(2)
     return IPPI.resample('D').ffill()
 
-def readPolicyRates():
-    """
-    Create dataframe of Bank of Canada daily nominal interest rate data
-    """
-    file_name = './data/policyRates.csv'
-    rates = pd.read_csv(file_name)
-    rates.columns = ['date','Policy Rate']
-    rates['date'] = pd.to_datetime(rates['date'])
-    rates = rates.set_index('date')
-    return rates.resample('D').ffill()
 
 def readGDP():
     """
@@ -158,6 +141,7 @@ def readRetailTrade():
     retail['REF_DATE'] = pd.to_datetime(retail['REF_DATE'])
     retail.columns = ['date','Retail']
     retail = retail.set_index('date')
+    retail = retail.shift(3)
     return retail.resample('D').ffill()
 
 def readUnemployment():
@@ -171,6 +155,7 @@ def readUnemployment():
     unemployment['REF_DATE'] = pd.to_datetime(unemployment['REF_DATE'])
     unemployment.columns = ['date','Unemployment']
     unemployment = unemployment.set_index('date')
+    unemployment = unemployment.shift(1)
     return unemployment.resample('D').ffill()
 
 def readWCS():
@@ -207,6 +192,7 @@ def readManufacturing():
     manufacturing.columns = ['date','Manufacturing']
     manufacturing['date'] = pd.to_datetime(manufacturing['date'])
     manufacturing = manufacturing.set_index('date')
+    manufacturing = manufacturing.shift(3)
     return manufacturing.resample('D').ffill()
 
 def readMktIncome():
@@ -217,6 +203,7 @@ def readMktIncome():
     mktincome['REF_DATE'] = pd.to_datetime(mktincome['REF_DATE'],format='%Y')
     mktincome.columns = ['date','Median Market Income']
     mktincome = mktincome.set_index('date')
+    mktincome = mktincome.shift(1)
     return mktincome.resample('D').ffill()
 
 def readPopulation():
@@ -226,6 +213,7 @@ def readPopulation():
     pop['REF_DATE'] = pd.to_datetime(pop['REF_DATE'])
     pop.columns = ['date','Population']
     pop = pop.set_index('date')
+    pop = pop.shift(1)
     return pop.resample('D').ffill()
 
 def readGoogleTrends():
@@ -251,6 +239,7 @@ def readAvgWeeklyEarnings():
     earnings.columns = ['date','Avg. Weekly Earnings']
     earnings['date'] = pd.to_datetime(earnings['date'])
     earnings = earnings.set_index('date')
+    earnings = earnings.shift(3)
     return earnings.resample('D').ffill()
 
 def readBOC():
@@ -284,6 +273,7 @@ def readCrimeSeverity():
     crime.columns = ['date','Crime Severity']
     crime['date'] = pd.to_datetime(crime['date'],format='%Y')
     crime = crime.set_index('date')
+    crime = crime.shift(1)
     return crime.resample('D').ffill()
 
 def readInvestment():
@@ -294,6 +284,7 @@ def readInvestment():
     investment['REF_DATE'] = pd.to_datetime(investment['REF_DATE'])
     investment.columns = ['date','Gross Fixed Capital Formation']
     investment = investment.set_index('date')
+    investment = investment.shift(1)
     return investment.resample('D').ffill()
 
 def readMedianAge():
@@ -303,6 +294,7 @@ def readMedianAge():
     age.columns = ['date','Median Age']
     age['date'] = pd.to_datetime(age['date'],format='%Y')
     age = age.set_index('date')
+    age = age.shift(1)
     return age.resample('D').ffill()
 
 def readSavingsRate():

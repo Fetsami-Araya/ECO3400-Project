@@ -11,3 +11,9 @@ of a benchmark AR(1) model.
 # Imports
 import numpy as np
 import pandas as pd
+from data_clean import createMasterData
+
+def readData():
+    master_data, master_data_some_na, master_data_no_na = createMasterData()
+    
+
