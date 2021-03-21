@@ -28,26 +28,37 @@ def readExportsImports():
     """
     Create dataframe of exports data
     """
-    file_name = './data/exports.csv'
+    file_name = './data/realGDP.csv'
     exports = pd.read_csv(file_name)
-    exports = exports[exports['Trade']=='Export']
+    exports = exports[exports['Estimates']=='Exports of goods and services']
     exports = exports[['REF_DATE','VALUE']]
     exports['REF_DATE'] = pd.to_datetime(exports['REF_DATE'])
     exports.columns = ['date','Exports']
     exports = exports.set_index('date')
-    exports = exports.shift(periods=1)
+    #exports = exports.shift(periods=1)
     exports = exports.resample('D').ffill()
 
     imports = pd.read_csv(file_name)
-    imports = imports[imports['Trade']=='Import']
-    imports = imports[['REF_DATE','VALUE']]
-    imports['REF_DATE'] = pd.to_datetime(imports['REF_DATE'])
-    imports.columns = ['date','Imports']
-    imports = imports.set_index('date')
-    imports = imports.shift(periods=1)
-    imports = imports.resample('D').ffill()
+    imports_goods = imports[(imports['Estimates']=='Imports of goods')]
+    imports_services = imports[(imports['Estimates']=='Imports of services')]
 
-    return exports, imports
+    imports_goods = imports_goods[['REF_DATE','VALUE']]
+    imports_services = imports_services[['REF_DATE','VALUE']]
+
+    imports_goods['REF_DATE'] = pd.to_datetime(imports_goods['REF_DATE'])
+    imports_services['REF_DATE'] = pd.to_datetime(imports_services['REF_DATE'])
+
+    imports_goods.columns = ['date','Imports']
+    imports_services.columns = ['date','Imports']
+
+    imports_goods = imports_goods.set_index('date')
+    imports_services = imports_services.set_index('date')
+
+    imports_goods_services = imports_goods.add(imports_services,fill_value=0)
+    #imports = imports.shift(periods=1)
+    imports_goods_services = imports_goods_services.resample('D').ffill()
+
+    return exports, imports_goods_services
 
 def readConsumption():
     """
