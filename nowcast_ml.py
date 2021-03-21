@@ -46,10 +46,44 @@ def gradientBoostingTrees(X,y):
     return gb_tree_fit
 
 
+def makePredictionDF(start_predict='2010-01-01'):
+    file_name = './data/realGDP.csv'
+    GDP = pd.read_csv(file_name)
+    GDP = GDP[GDP['Estimates']=="Gross domestic product at market prices"]
+    GDP = GDP[['REF_DATE','VALUE']]
+    GDP['REF_DATE'] = pd.to_datetime(GDP['REF_DATE'])
+    GDP.columns = ['date','GDP']
+    GDP = GDP.set_index('date')
+    models = ['LASSO','Ridge','Elastic Net','Gradient Boosting','Neural Net','SVM','AR(1)']
+    for model in models:
+        GDP[model] = np.nan
+    ar_gdp = ar1model(GDP['GDP'])
+    GDP['AR(1)'] = ar_gdp.predict()
+    return GDP.loc[start_predict:]
+
+def rollingWindow(start_predict='2010-01-01'):
+    _,_,master = createMasterData()
+    X_train = master.copy().drop('GDP',axis=1)
+    y_train = master.copy()['GDP']
+
+    X_test = master.copy().drop('GDP',axis=1).loc[start_predict:]
+    y_test = master.copy()['GDP'].loc[start_predict:]
+
+    prediction_df = makePredictionDF(start_predict)
+
+    for date in prediction_df.index:
+        X = X_train.loc[:date]
+        y = y_train.loc[:date]
+
+        elastic = elasticNetModel(X,y)
+        gb_tree = gradientBoostingTrees(X,y)
+        
+        closest_date = X.index.get_loc(date,method='nearest')
+        X_date = X.loc[X.index[closest_date],:]
+        prediction_df.loc[date,['LASSO','Ridge','Elastic Net','Gradient Boosting','Neural Net','SVM']] = [np.nan,np.nan,elastic.predict(X_date),gb_tree.predict(X_date),np.nan,np.nan].reshape(-1, 1)
+    return prediction_df
+
 if __name__ == '__main__':
-    data = readData()
-    split = split_data(data,'1961-01-01','2000-01-01')
-    ar = ar1model(split['GDP'])
-    print(ar.predict())
+    print(rollingWindow())
 
 
