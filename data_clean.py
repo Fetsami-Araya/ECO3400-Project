@@ -123,7 +123,7 @@ def readGDP():
     """
     file_name = './data/realGDP.csv'
     GDP = pd.read_csv(file_name)
-    GDP = GDP[GDP['Estimates']=="Final consumption expenditure"]
+    GDP = GDP[GDP['Estimates']=="Gross domestic product at market prices"]
     GDP = GDP[['REF_DATE','VALUE']]
     GDP['REF_DATE'] = pd.to_datetime(GDP['REF_DATE'])
     GDP.columns = ['date','GDP']
