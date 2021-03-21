@@ -323,7 +323,6 @@ def createMasterData():
     """
     Create master data set of all series
     """
-    print('READING IN RAW DATA','\n')
     cpi = readCPI()
     exports, imports = readExportsImports()
     consumption = readConsumption()
@@ -347,7 +346,6 @@ def createMasterData():
     manufacturing = readManufacturing()
     savings_rate, disposable_income = readSavingsRate()
 
-    print('\n','BEGINNING MERGE','\n')
     all_series_no_gdp = [exports, imports, consumption, investment,
                 population, median_age, mktincome, crime, cpi, ippi,
                 housing, unemployment, google_trends, earnings, retail, manufacturing, jobless,
@@ -361,15 +359,14 @@ def createMasterData():
     master_data_no_na = master_data.dropna(how='any')
     master_data_some_na = master_data.dropna(how='all')
 
-    print('\n','MERGE COMPLETE')
-
     return master_data, master_data_some_na, master_data_no_na
 
-master_data, master_data_some_na, master_data_no_na = createMasterData()
+if __name__ == '__main__':
+    master_data, master_data_some_na, master_data_no_na = createMasterData()
 
-print('\n\n','\t\t\t\t\t\t\t\t RAW','\n\n',master_data,'\n\n','\t\t\t\t\t\t\t\t SOME NAs','\n\n',master_data_some_na, '\n\n','\t\t\t\t\t\t\t\t NO NAs','\n\n', master_data_no_na)
-print('\n\n','DATAFRAME INFO','\n\n')
-master_data.info()
-print('SAVING TO .csv (na and no na)')
-master_data.to_csv('./data/master_data_og.csv')
-master_data_no_na.to_csv('./data/master_data_no_na.csv')
+    print('\n\n','\t\t\t\t\t\t\t\t RAW','\n\n',master_data,'\n\n','\t\t\t\t\t\t\t\t SOME NAs','\n\n',master_data_some_na, '\n\n','\t\t\t\t\t\t\t\t NO NAs','\n\n', master_data_no_na)
+    print('\n\n','DATAFRAME INFO','\n\n')
+    master_data.info()
+    print('SAVING TO .csv (na and no na)')
+    master_data.to_csv('./data/master_data_og.csv')
+    master_data_no_na.to_csv('./data/master_data_no_na.csv')

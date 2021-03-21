@@ -13,7 +13,10 @@ import numpy as np
 import pandas as pd
 from data_clean import createMasterData
 
-def readData():
+def readData(dataset_type='og'):
     master_data, master_data_some_na, master_data_no_na = createMasterData()
-    
+    master_data_dict = {'og':master_data, 'some_na':master_data_some_na, 'no_na':master_data_no_na}
+    return master_data_dict[dataset_type]
+
+print(readData())
 
