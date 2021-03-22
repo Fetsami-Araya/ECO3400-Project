@@ -31,22 +31,22 @@ def split_data(df,start_date,end_date):
 
 
 def ar1model(data,lag=1):
-    ar1 = AutoReg(data,lags=lag)
+    ar1 = AutoReg(data,lags=lag,old_names=True)
     ar1_fit = ar1.fit()
     return ar1_fit
 
 def elasticNetModel(X,y):
-    elastic = ElasticNet(random_state=42)
+    elastic = ElasticNet(max_iter=20000,tol=1e-3)
     elastic_fit = elastic.fit(X,y)
     return elastic_fit
 
 def gradientBoostingTrees(X,y):
-    gb_tree = GradientBoostingRegressor(random_state=42)
+    gb_tree = GradientBoostingRegressor()
     gb_tree_fit = gb_tree.fit(X,y)
     return gb_tree_fit
 
 
-def makePredictionDF(start_predict='2010-01-01'):
+def makePredictionDF(start_predict='2010-01-01',end_predict='2017-10-01'):
     file_name = './data/realGDP.csv'
     GDP = pd.read_csv(file_name)
     GDP = GDP[GDP['Estimates']=="Gross domestic product at market prices"]
@@ -59,19 +59,17 @@ def makePredictionDF(start_predict='2010-01-01'):
         GDP[model] = np.nan
     ar_gdp = ar1model(GDP['GDP'])
     GDP['AR(1)'] = ar_gdp.predict()
-    return GDP.loc[start_predict:]
+    return GDP.loc[start_predict:end_predict]
 
-def rollingWindow(start_predict='2010-01-01'):
+def rollingWindow(start_predict='2010-01-01',end_predict='2017-10-01'):
     _,_,master = createMasterData()
     X_train = master.copy().drop('GDP',axis=1)
     y_train = master.copy()['GDP']
 
-    X_test = master.copy().drop('GDP',axis=1).loc[start_predict:]
-    y_test = master.copy()['GDP'].loc[start_predict:]
-
-    prediction_df = makePredictionDF(start_predict)
+    prediction_df = makePredictionDF(start_predict,end_predict)
 
     for date in prediction_df.index:
+        print('Predictions for: ',date)
         X = X_train.loc[:date]
         y = y_train.loc[:date]
 
@@ -79,9 +77,11 @@ def rollingWindow(start_predict='2010-01-01'):
         gb_tree = gradientBoostingTrees(X,y)
         
         closest_date = X.index.get_loc(date,method='nearest')
-        X_date = X.loc[X.index[closest_date],:]
-        # ???
-        prediction_df.loc[date,['LASSO','Ridge','Elastic Net','Gradient Boosting','Neural Net','SVM']] = pd.Series([np.nan,np.nan,elastic.predict(X_date),gb_tree.predict(X_date),np.nan,np.nan],index=date)
+        X_date = X.loc[X.index[closest_date],:].values.reshape(1, -1)
+        
+        prediction_df.loc[date,'Elastic Net'] = elastic.predict(X_date)
+        prediction_df.loc[date,'Gradient Boosting'] = gb_tree.predict(X_date)
+
     return prediction_df
 
 if __name__ == '__main__':
