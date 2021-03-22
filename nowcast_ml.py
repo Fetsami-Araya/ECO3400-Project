@@ -80,7 +80,8 @@ def rollingWindow(start_predict='2010-01-01'):
         
         closest_date = X.index.get_loc(date,method='nearest')
         X_date = X.loc[X.index[closest_date],:]
-        prediction_df.loc[date,['LASSO','Ridge','Elastic Net','Gradient Boosting','Neural Net','SVM']] = [np.nan,np.nan,elastic.predict(X_date),gb_tree.predict(X_date),np.nan,np.nan].reshape(-1, 1)
+        # ???
+        prediction_df.loc[date,['LASSO','Ridge','Elastic Net','Gradient Boosting','Neural Net','SVM']] = pd.Series([np.nan,np.nan,elastic.predict(X_date),gb_tree.predict(X_date),np.nan,np.nan],index=date)
     return prediction_df
 
 if __name__ == '__main__':

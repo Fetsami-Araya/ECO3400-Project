@@ -175,9 +175,9 @@ def readWCS():
     """
     file_name = './data/WCS.csv'
     all_oil = pd.read_csv(file_name)
-    WTI = all_oil[all_oil['Type']=='WCS']
+    WTI = all_oil[all_oil['Type']=='WTI']
     WTI = WTI[['When','Alberta']]
-    WTI.columns = ['date','WCS']
+    WTI.columns = ['date','WTI']
     WTI['date'] = pd.to_datetime(WTI['date'])
     WTI = WTI.set_index('date')
     WTI = WTI.resample('D').ffill()
@@ -345,7 +345,7 @@ def createMasterData():
     gdp = readGDP()
     retail = readRetailTrade()
     unemployment = readUnemployment()
-    wcs = readWCS()
+    wti = readWCS()
     mktincome = readMktIncome()
     cadusd = readCADUSD()
     earnings = readAvgWeeklyEarnings()
@@ -358,9 +358,9 @@ def createMasterData():
     savings_rate, disposable_income = readSavingsRate()
 
     all_series_no_gdp = [exports, imports, consumption, investment,
-                population, median_age, mktincome, crime, cpi, ippi,
-                housing, unemployment, google_trends, earnings, retail, manufacturing, jobless,
-                wcs, gsptse, cadusd, tenyearbond, target,savings_rate, disposable_income]
+                population, median_age, mktincome, cpi, ippi, wti,
+                housing, unemployment, retail, manufacturing, jobless, earnings, crime,
+                gsptse, cadusd, tenyearbond, target,savings_rate, disposable_income]
     
     # Using repeated joins to maximize data retention.
     for df in all_series_no_gdp:
