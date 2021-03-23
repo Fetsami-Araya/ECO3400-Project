@@ -243,11 +243,12 @@ def readCADUSD():
     cadusd = cadusd.set_index('date')
     return cadusd.resample('D').ffill()
 
-def readAvgWeeklyEarnings():
-    file_name = './data/avgWeeklyEarnings.csv'
+def readWages():
+    file_name = './data/wages.csv'
     earnings = pd.read_csv(file_name)
+    earnings = earnings[earnings['Estimates']=="Wages and salaries"]
     earnings = earnings[['REF_DATE','VALUE']]
-    earnings.columns = ['date','Avg. Weekly Earnings']
+    earnings.columns = ['date','Wages and Salaries']
     earnings['date'] = pd.to_datetime(earnings['date'])
     earnings = earnings.set_index('date')
     #earnings = earnings.shift(3)
@@ -311,7 +312,7 @@ def readMedianAge():
 def readSavingsRate():
     file_name = './data/savings_disposable_income.csv'
     savings = pd.read_csv(file_name)
-    savings = savings[savings['Estimates']=="Equals: national saving rate"]
+    savings = savings[savings['Estimates']=="Household saving rate"]
     savings = savings[['REF_DATE','VALUE']]
     savings.columns = ['date','Savings Rate']
     savings['date'] = pd.to_datetime(savings['date'])
@@ -319,7 +320,7 @@ def readSavingsRate():
     savings = savings.resample('D').ffill()
 
     disposable_income = pd.read_csv(file_name)
-    disposable_income = disposable_income[disposable_income['VECTOR']=="v62305869"]
+    disposable_income = disposable_income[disposable_income['Estimates']=="Household disposable income"]
     disposable_income = disposable_income[['REF_DATE','VALUE']]
     disposable_income.columns = ['date','Household Disposable Income']
     disposable_income['date'] = pd.to_datetime(disposable_income['date'])
@@ -346,9 +347,8 @@ def createMasterData():
     retail = readRetailTrade()
     unemployment = readUnemployment()
     wti = readWCS()
-    mktincome = readMktIncome()
     cadusd = readCADUSD()
-    earnings = readAvgWeeklyEarnings()
+    wages = readWages()
     target, tenyearbond = readBOC()
     crime = readCrimeSeverity()
     google_trends = readGoogleTrends()
@@ -357,9 +357,9 @@ def createMasterData():
     manufacturing = readManufacturing()
     savings_rate, disposable_income = readSavingsRate()
 
-    all_series_no_gdp = [exports, imports, consumption, investment,
-                population, median_age, mktincome, cpi, ippi, wti,
-                housing, unemployment, retail, manufacturing, jobless, earnings, crime,
+    all_series_no_gdp = [exports, imports, consumption, investment, wages,
+                population, median_age, cpi, ippi, wti,
+                housing, unemployment, retail, manufacturing, jobless, crime,
                 gsptse, cadusd, tenyearbond, target,savings_rate, disposable_income]
     
     # Using repeated joins to maximize data retention.
