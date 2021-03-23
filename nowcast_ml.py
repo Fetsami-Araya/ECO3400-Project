@@ -23,6 +23,7 @@ from sklearn.linear_model import Lasso
 from sklearn.linear_model import Ridge
 
 from sklearn.metrics import mean_squared_error
+from sklearn.preprocessing import StandardScaler
 
 def readData(dataset_type='og'):
     master_data, master_data_some_na, master_data_no_na = createMasterData()
@@ -40,7 +41,7 @@ def ar1model(data,lag=1):
     return ar1_fit
 
 def elasticNetModel(X,y):
-    elastic = ElasticNet(max_iter=20000,tol=1e-3)
+    elastic = ElasticNet(max_iter=30000,tol=1e-3)
     elastic_fit = elastic.fit(X,y)
     return elastic_fit
 
@@ -50,12 +51,12 @@ def gradientBoostingTrees(X,y):
     return gb_tree_fit
 
 def LASSO(X, y):
-    mod = Lasso(max_iter = 20000,tol=1e-3)
+    mod = Lasso(max_iter = 30000,tol=1e-3)
     lassofit = mod.fit(X,y)
     return lassofit
 
 def RIDGE(X, y):
-    mod = Ridge(max_iter = 20000, tol=1e-3,normalize = True) #Dealing with both large and small values, hence the normalization
+    mod = Ridge(max_iter = 30000, tol=1e-3,normalize = True) #Dealing with both large and small values, hence the normalization
     ridge_mod = mod.fit(X,y)
     return ridge_mod
 
@@ -78,6 +79,11 @@ def rollingWindow(start_predict='2010-01-01',end_predict='2017-10-01'):
     _,_,master = createMasterData()
     X_train = master.copy().drop('GDP',axis=1)
     y_train = master.copy()['GDP']
+
+    SS = StandardScaler()
+    X_train = SS.fit_transform(X_train)
+    
+    X_train = pd.DataFrame(X_train, columns=master.columns.values[1:]).set_index(y_train.index)
 
     prediction_df = makePredictionDF(start_predict,end_predict)
 
