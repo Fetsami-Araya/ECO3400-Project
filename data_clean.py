@@ -64,9 +64,9 @@ def readConsumption():
     """
     Create dataframe of final consumption data
     """
-    file_name = './data/finalConsumption.csv'
+    file_name = './data/realGDP.csv'
     consumption = pd.read_csv(file_name)
-    consumption = consumption[consumption['Estimates']=='Household final consumption expenditure [C]']
+    consumption = consumption[consumption['Estimates']=="Final consumption expenditure"]
     consumption = consumption[['REF_DATE','VALUE']]
     consumption['REF_DATE'] = pd.to_datetime(consumption['REF_DATE'])
     consumption.columns = ['date','Consumption']
