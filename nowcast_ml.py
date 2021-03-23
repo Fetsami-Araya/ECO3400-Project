@@ -41,7 +41,7 @@ def ar1model(data,lag=1):
     return ar1_fit
 
 def elasticNetModel(X,y):
-    elastic = ElasticNet(max_iter=30000,tol=1e-3)
+    elastic = ElasticNet(max_iter=30000,tol=1e-5)
     elastic_fit = elastic.fit(X,y)
     return elastic_fit
 
@@ -51,16 +51,16 @@ def gradientBoostingTrees(X,y):
     return gb_tree_fit
 
 def LASSO(X, y):
-    mod = Lasso(max_iter = 30000,tol=1e-3)
+    mod = Lasso(max_iter = 30000,tol=1e-5)
     lassofit = mod.fit(X,y)
     return lassofit
 
 def RIDGE(X, y):
-    mod = Ridge(max_iter = 30000, tol=1e-3,normalize = True) #Dealing with both large and small values, hence the normalization
+    mod = Ridge(max_iter = 30000, tol=1e-5,normalize = True) #Dealing with both large and small values, hence the normalization
     ridge_mod = mod.fit(X,y)
     return ridge_mod
 
-def makePredictionDF(start_predict='2010-01-01',end_predict='2017-10-01'):
+def makePredictionDF(start_predict='2010-01-01',end_predict='2018-12-31'):
     file_name = './data/realGDP.csv'
     GDP = pd.read_csv(file_name)
     GDP = GDP[GDP['Estimates']=="Gross domestic product at market prices"]
@@ -71,12 +71,11 @@ def makePredictionDF(start_predict='2010-01-01',end_predict='2017-10-01'):
     models = ['LASSO','Ridge','Elastic Net','Gradient Boosting','Neural Net','SVM','AR(1)']
     for model in models:
         GDP[model] = np.nan
-    ar_gdp = ar1model(GDP['GDP'])
-    GDP['AR(1)'] = ar_gdp.predict()
     return GDP.loc[start_predict:end_predict]
 
-def rollingWindow(start_predict='2010-01-01',end_predict='2017-10-01'):
+def rollingWindow(start_predict='2010-01-01',end_predict='2018-12-31'):
     _,_,master = createMasterData()
+    master.index = pd.DatetimeIndex(master.index).to_period('D')
     X_train = master.copy().drop('GDP',axis=1)
     y_train = master.copy()['GDP']
 
@@ -96,10 +95,12 @@ def rollingWindow(start_predict='2010-01-01',end_predict='2017-10-01'):
         gb_tree = gradientBoostingTrees(X,y)
         lasso = LASSO(X,y)
         ridge = RIDGE(X,y)
+        ar1 = ar1model(y)
         
         closest_date = X.index.get_loc(date,method='nearest')
         X_date = X.loc[X.index[closest_date],:].values.reshape(1, -1)
         
+        prediction_df.loc[date,'AR(1)'] = ar1.predict(closest_date).values[0]
         prediction_df.loc[date,'Elastic Net'] = elastic.predict(X_date)
         prediction_df.loc[date,'Gradient Boosting'] = gb_tree.predict(X_date)
         prediction_df.loc[date,'LASSO'] = lasso.predict(X_date)
