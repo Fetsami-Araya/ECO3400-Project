@@ -19,6 +19,10 @@ from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.ar_model import AutoReg
 from sklearn.linear_model import ElasticNet
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import Ridge
+
+from sklearn.metrics import mean_squared_error
 
 def readData(dataset_type='og'):
     master_data, master_data_some_na, master_data_no_na = createMasterData()
@@ -45,6 +49,15 @@ def gradientBoostingTrees(X,y):
     gb_tree_fit = gb_tree.fit(X,y)
     return gb_tree_fit
 
+def LASSO(X, y):
+    mod = Lasso(max_iter = 20000,tol=1e-3)
+    lassofit = mod.fit(X,y)
+    return lassofit
+
+def RIDGE(X, y):
+    mod = Ridge(max_iter = 20000, tol=1e-3,normalize = True) #Dealing with both large and small values, hence the normalization
+    ridge_mod = mod.fit(X,y)
+    return ridge_mod
 
 def makePredictionDF(start_predict='2010-01-01',end_predict='2017-10-01'):
     file_name = './data/realGDP.csv'
@@ -69,22 +82,35 @@ def rollingWindow(start_predict='2010-01-01',end_predict='2017-10-01'):
     prediction_df = makePredictionDF(start_predict,end_predict)
 
     for date in prediction_df.index:
-        print('Predictions for: ',date)
+        print('Making predictions for: ',date)
         X = X_train.loc[:date]
         y = y_train.loc[:date]
 
         elastic = elasticNetModel(X,y)
         gb_tree = gradientBoostingTrees(X,y)
+        lasso = LASSO(X,y)
+        ridge = RIDGE(X,y)
         
         closest_date = X.index.get_loc(date,method='nearest')
         X_date = X.loc[X.index[closest_date],:].values.reshape(1, -1)
         
         prediction_df.loc[date,'Elastic Net'] = elastic.predict(X_date)
         prediction_df.loc[date,'Gradient Boosting'] = gb_tree.predict(X_date)
+        prediction_df.loc[date,'LASSO'] = lasso.predict(X_date)
+        prediction_df.loc[date,'Ridge'] = ridge.predict(X_date)
 
     return prediction_df
 
 if __name__ == '__main__':
-    print(rollingWindow())
+    df = rollingWindow().fillna(0).astype(int)
+    predictions = df.drop('GDP',axis=1)
+    actual = df['GDP']
+    root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[]}
+    for col in predictions:
+        rmse = np.sqrt(mean_squared_error(actual,predictions[col]))
+        root_errors[col] = [rmse]
+    rmse_df = pd.DataFrame(root_errors,index=['RMSE'])
+    print(rmse_df)
+    
 
 
