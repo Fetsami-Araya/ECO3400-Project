@@ -50,7 +50,7 @@ Model = SVR(kernel='rbf', C=100, epsilon=0.1, gamma='scale')
 svr= Model.fit(X_train, y_train)
 
 
-y_pred = Model.predict(X_test)
+y_pred = svr.predict(X_test)
 
 #evaluate
 from sklearn.metrics import r2_score,mean_squared_error
