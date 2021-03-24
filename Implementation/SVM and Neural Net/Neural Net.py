@@ -31,17 +31,17 @@ X.head()
 y = q_df['Real GDP']
 y.head()
              
-#split into testing and training data but use 90% of beginning sequential rows to train and rest to test
-X_train = X[:int(X.shape[0]*0.9)]
-X_test = X[int(X.shape[0]*0.9):]
-y_train = y[:int(X.shape[0]*0.9)]
-y_test = y[int(X.shape[0]*0.9):]
+#split into testing and training data but use 85% of beginning sequential rows to train and rest to test
+X_train = X[:int(X.shape[0]*0.85)]
+X_test = X[int(X.shape[0]*0.85):]
+y_train = y[:int(X.shape[0]*0.85)]
+y_test = y[int(X.shape[0]*0.85):]
 
 len(X_train)
 len(X_test)
 
 #train the model
-reg = MLPRegressor(hidden_layer_sizes=(64,64,64),activation="relu" ,random_state=1, max_iter=2000).fit(X_train, y_train)
+reg = MLPRegressor(hidden_layer_sizes=(50,50,50,50),activation="relu" ,random_state=1, max_iter=5000).fit(X_train, y_train)
 
 y_pred = reg.predict(X_test)
 
