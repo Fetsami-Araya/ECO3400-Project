@@ -65,7 +65,7 @@ def RIDGE(X, y):
     return ridge_mod
 
 def NeuralNet(X,y):
-    neural = MLPRegressor(hidden_layer_sizes=(20,20),activation="relu" ,random_state=1, max_iter=5000)
+    neural = MLPRegressor(hidden_layer_sizes=(50,50,50),activation="relu" ,random_state=1, max_iter=5000)
     neural_fit = neural.fit(X, y)
     return neural
 
@@ -83,12 +83,12 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     GDP['REF_DATE'] = pd.to_datetime(GDP['REF_DATE'])
     GDP.columns = ['date','GDP']
     GDP = GDP.set_index('date')
-    models = ['LASSO','Ridge','Elastic Net','Gradient Boosting','Neural Net','SVM','AR(1)']
+    models = ['LASSO','Ridge','Elastic Net','Gradient Boosting','Neural Net','SVM','AR(1)','Model Avg.']
     for model in models:
         GDP[model] = np.nan
     return GDP.loc[start_predict:end_predict]
 
-def rollingWindow(start_predict='2018-01-01',end_predict='2018-12-31'):
+def rollingWindow(start_predict='2018-07-01',end_predict='2018-12-31'):
     start = time.time()
     _,_,master = createMasterData()
     master.index = pd.DatetimeIndex(master.index).to_period('D')
@@ -127,29 +127,42 @@ def rollingWindow(start_predict='2018-01-01',end_predict='2018-12-31'):
         X_date = X.loc[X.index[closest_date],:].values.reshape(1, -1)
         
         print('Generating predictions')
-        prediction_df.loc[date,'AR(1)'] = ar1.predict(closest_date).values[0]
-        prediction_df.loc[date,'Elastic Net'] = elastic.predict(X_date)
-        prediction_df.loc[date,'Gradient Boosting'] = gb_tree.predict(X_date)
-        prediction_df.loc[date,'LASSO'] = lasso.predict(X_date)
-        prediction_df.loc[date,'Ridge'] = ridge.predict(X_date)
-        prediction_df.loc[date,'Neural Net'] = neural.predict(X_date)
-        prediction_df.loc[date,'SVM'] = svm.predict(X_date)
+        ar1_predict = ar1.predict(closest_date).values[0]
+        elastic_predict = elastic.predict(X_date)
+        gb_tree_predict = gb_tree.predict(X_date)
+        lasso_predict = lasso.predict(X_date)
+        ridge_predict = ridge.predict(X_date)
+        neural_predict = neural.predict(X_date)
+        svm_predict = svm.predict(X_date)
+
+        prediction_df.loc[date,'AR(1)'] = ar1_predict
+        prediction_df.loc[date,'Elastic Net'] = elastic_predict
+        prediction_df.loc[date,'Gradient Boosting'] = gb_tree_predict
+        prediction_df.loc[date,'LASSO'] = lasso_predict
+        prediction_df.loc[date,'Ridge'] = ridge_predict
+        prediction_df.loc[date,'Neural Net'] = neural_predict
+        prediction_df.loc[date,'SVM'] = svm_predict
+        prediction_df.loc[date,'Model Avg.'] = (elastic_predict + gb_tree_predict + lasso_predict + ridge_predict + neural_predict + svm_predict)/6
 
         print('Predictions for this quarter complete')
 
     print("--- %s seconds ---" % (time.time() - start))
     return prediction_df
 
-if __name__ == '__main__':
-    df = rollingWindow().fillna(0).astype(int)
+
+def findRMSE(df):
     predictions = df.drop('GDP',axis=1)
     actual = df['GDP']
-    root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[]}
+    root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[],'Model Avg.':[]}
     for col in predictions:
         rmse = np.sqrt(mean_squared_error(actual,predictions[col]))
         root_errors[col] = [rmse]
     rmse_df = pd.DataFrame(root_errors,index=['RMSE'])
-    print(rmse_df)
+    return rmse_df
+if __name__ == '__main__':
+    df = rollingWindow().fillna(0).astype(int)
+    print(df)
+    print(findRMSE(df))
     
 
 
