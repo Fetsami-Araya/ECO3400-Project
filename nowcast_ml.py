@@ -21,9 +21,13 @@ from sklearn.linear_model import ElasticNet
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import Lasso
 from sklearn.linear_model import Ridge
+from sklearn.svm import SVR
+from sklearn.neural_network import MLPRegressor
 
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
+
+import time
 
 def readData(dataset_type='og'):
     master_data, master_data_some_na, master_data_no_na = createMasterData()
@@ -60,7 +64,18 @@ def RIDGE(X, y):
     ridge_mod = mod.fit(X,y)
     return ridge_mod
 
-def makePredictionDF(start_predict='2010-01-01',end_predict='2018-12-31'):
+def NeuralNet(X,y):
+    neural = MLPRegressor(hidden_layer_sizes=(20,20),activation="relu" ,random_state=1, max_iter=5000)
+    neural_fit = neural.fit(X, y)
+    return neural
+
+def SVM_model(X,y):
+    svr = SVR(kernel='rbf', C=100, epsilon=0.1, gamma='scale')
+    svr_fit = svr.fit(X, y)
+    return svr
+
+
+def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     file_name = './data/realGDP.csv'
     GDP = pd.read_csv(file_name)
     GDP = GDP[GDP['Estimates']=="Gross domestic product at market prices"]
@@ -73,7 +88,8 @@ def makePredictionDF(start_predict='2010-01-01',end_predict='2018-12-31'):
         GDP[model] = np.nan
     return GDP.loc[start_predict:end_predict]
 
-def rollingWindow(start_predict='2010-01-01',end_predict='2018-12-31'):
+def rollingWindow(start_predict='2018-01-01',end_predict='2018-12-31'):
+    start = time.time()
     _,_,master = createMasterData()
     master.index = pd.DatetimeIndex(master.index).to_period('D')
     X_train = master.copy().drop('GDP',axis=1)
@@ -90,22 +106,38 @@ def rollingWindow(start_predict='2010-01-01',end_predict='2018-12-31'):
         print('Making predictions for: ',date)
         X = X_train.loc[:date]
         y = y_train.loc[:date]
-
+        
+        print('Beginning to estimate models')
         elastic = elasticNetModel(X,y)
+        print('Elastic Net estimated')
         gb_tree = gradientBoostingTrees(X,y)
+        print('Gradient Boosting Tree estimated')
         lasso = LASSO(X,y)
+        print('Lasso estimated')
         ridge = RIDGE(X,y)
+        print('Ridge estimated')
+        neural = NeuralNet(X,y)
+        print('Neural Net estimated')
+        svm = SVM_model(X,y)
+        print('SVM estimated')
         ar1 = ar1model(y)
+        print('AR(1) estimated')
         
         closest_date = X.index.get_loc(date,method='nearest')
         X_date = X.loc[X.index[closest_date],:].values.reshape(1, -1)
         
+        print('Generating predictions')
         prediction_df.loc[date,'AR(1)'] = ar1.predict(closest_date).values[0]
         prediction_df.loc[date,'Elastic Net'] = elastic.predict(X_date)
         prediction_df.loc[date,'Gradient Boosting'] = gb_tree.predict(X_date)
         prediction_df.loc[date,'LASSO'] = lasso.predict(X_date)
         prediction_df.loc[date,'Ridge'] = ridge.predict(X_date)
+        prediction_df.loc[date,'Neural Net'] = neural.predict(X_date)
+        prediction_df.loc[date,'SVM'] = svm.predict(X_date)
 
+        print('Predictions for this quarter complete')
+
+    print("--- %s seconds ---" % (time.time() - start))
     return prediction_df
 
 if __name__ == '__main__':
