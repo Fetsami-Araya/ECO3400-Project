@@ -65,7 +65,7 @@ def RIDGE(X, y):
     return ridge_mod
 
 def NeuralNet(X,y):
-    neural = MLPRegressor(hidden_layer_sizes=(50,50,50),activation="relu" ,random_state=1, max_iter=5000)
+    neural = MLPRegressor(hidden_layer_sizes=(50,50,50,50,50),activation="relu" ,random_state=1, max_iter=5000)
     neural_fit = neural.fit(X, y)
     return neural
 
@@ -92,13 +92,17 @@ def rollingWindow(start_predict='2018-07-01',end_predict='2018-12-31'):
     start = time.time()
     _,_,master = createMasterData()
     master.index = pd.DatetimeIndex(master.index).to_period('D')
-    X_train = master.copy().drop('GDP',axis=1)
-    y_train = master.copy()['GDP']
+       
+    X_train = master.drop(['GDP'],axis='columns')
+    y_train = master[['GDP']]
 
-    SS = StandardScaler()
-    X_train = SS.fit_transform(X_train)
-    
-    X_train = pd.DataFrame(X_train, columns=master.columns.values[1:]).set_index(y_train.index)
+    X_train = pd.DataFrame(StandardScaler().fit_transform(X_train),columns=X_train.columns,index=X_train.index)
+    scalerGDP = StandardScaler().fit(y_train)
+    y_train_scaled = scalerGDP.transform(y_train)
+    y_train = pd.DataFrame(y_train_scaled,columns=y_train.columns,index=y_train.index)['GDP']
+
+    print(type(X_train),type(y_train))
+
 
     prediction_df = makePredictionDF(start_predict,end_predict)
 
@@ -142,10 +146,12 @@ def rollingWindow(start_predict='2018-07-01',end_predict='2018-12-31'):
         prediction_df.loc[date,'Ridge'] = ridge_predict
         prediction_df.loc[date,'Neural Net'] = neural_predict
         prediction_df.loc[date,'SVM'] = svm_predict
-        prediction_df.loc[date,'Model Avg.'] = (elastic_predict + gb_tree_predict + lasso_predict + ridge_predict + neural_predict + svm_predict)/6
+        prediction_df.loc[date,'Model Avg.'] = (elastic_predict+gb_tree_predict+lasso_predict+ridge_predict+neural_predict+svm_predict)/6
 
         print('Predictions for this quarter complete')
 
+    for model in ['AR(1)','Elastic Net','Gradient Boosting','LASSO','Ridge','Neural Net','SVM','Model Avg.']:
+        prediction_df[model] = scalerGDP.inverse_transform(prediction_df[model])
     print("--- %s seconds ---" % (time.time() - start))
     return prediction_df
 
@@ -159,8 +165,9 @@ def findRMSE(df):
         root_errors[col] = [rmse]
     rmse_df = pd.DataFrame(root_errors,index=['RMSE'])
     return rmse_df
+
 if __name__ == '__main__':
-    df = rollingWindow().fillna(0).astype(int)
+    df = rollingWindow().fillna(0)
     print(df)
     print(findRMSE(df))
     
