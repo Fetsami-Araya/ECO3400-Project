@@ -29,14 +29,14 @@ from sklearn.preprocessing import StandardScaler
 
 import time
 
-def readData(dataset_type='og'):
-    master_data, master_data_some_na, master_data_no_na = createMasterData()
-    master_data_dict = {'og':master_data, 'some_na':master_data_some_na, 'no_na':master_data_no_na}
-    data = master_data_dict[dataset_type]
+def readMasterData(dataset_type='Matthew'):
+    if dataset_type != 'Matthew':
+        _,_, data = createMasterData()
+    else:
+        data = pd.read_csv('./Master Datasets/M-ACTUAL.csv')
+        data['Date'] = pd.to_datetime(data['Date'])
+        data = data.set_index('Date')
     return data
-
-def split_data(df,start_date,end_date):
-    return df.loc[start_date:end_date]
 
 
 def ar1model(data,lag=1):
@@ -90,7 +90,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
 
 def rollingWindow(start_predict='2018-07-01',end_predict='2018-12-31'):
     start = time.time()
-    _,_,master = createMasterData()
+    master = readMasterData()
     master.index = pd.DatetimeIndex(master.index).to_period('D')
        
     X_train = master.drop(['GDP'],axis='columns')

@@ -22,6 +22,7 @@ def readCPI():
     cpi['REF_DATE'] = pd.to_datetime(cpi['REF_DATE'])
     cpi.columns = ['date','CPI']
     cpi = cpi.set_index('date')
+    cpi = cpi.shift(1)
     return cpi.resample('D').ffill()
 
 def readExportsImports():
@@ -39,26 +40,35 @@ def readExportsImports():
     exports = exports.resample('D').ffill()
 
     imports = pd.read_csv(file_name)
+    imports_final = imports[(imports['Estimates']=="Less: imports of goods and services")]
     imports_goods = imports[(imports['Estimates']=='Imports of goods')]
     imports_services = imports[(imports['Estimates']=='Imports of services')]
 
     imports_goods = imports_goods[['REF_DATE','VALUE']]
     imports_services = imports_services[['REF_DATE','VALUE']]
+    imports_final = imports_final[['REF_DATE','VALUE']]
 
     imports_goods['REF_DATE'] = pd.to_datetime(imports_goods['REF_DATE'])
     imports_services['REF_DATE'] = pd.to_datetime(imports_services['REF_DATE'])
+    imports_final['REF_DATE'] = pd.to_datetime(imports_final['REF_DATE'])
 
     imports_goods.columns = ['date','Imports']
     imports_services.columns = ['date','Imports']
+    imports_final.columns = ['date','Imports']
 
     imports_goods = imports_goods.set_index('date')
     imports_services = imports_services.set_index('date')
+    imports_final = imports_final.set_index('date')
 
     imports_goods_services = imports_goods.add(imports_services,fill_value=0)
+    imports_goods_services = imports_goods_services.shift(1)
     imports = imports.shift(periods=1)
-    imports_goods_services = imports_goods_services.resample('D').ffill()
+    imports_final = imports_final.shift(periods=1)
 
-    return exports, imports_goods_services
+    imports_goods_services = imports_goods_services.resample('D').ffill()
+    imports_final = imports_final.resample('D').ffill()
+
+    return exports, imports_final
 
 def readConsumption():
     """
@@ -181,6 +191,7 @@ def readWCS():
     WTI['date'] = pd.to_datetime(WTI['date'])
     WTI = WTI.set_index('date')
     WTI = WTI.resample('D').ffill()
+    WTI = WTI.shift(2)
 
     return WTI
 
@@ -359,7 +370,7 @@ def createMasterData():
 
     all_series_no_gdp = [exports, imports, consumption, investment, wages,
                 population, median_age, cpi, ippi, wti,
-                housing, unemployment, retail, manufacturing, jobless, crime,
+                housing, unemployment, retail, manufacturing,
                 gsptse, cadusd, tenyearbond, target,savings_rate, disposable_income]
     
     # Using repeated joins to maximize data retention.
