@@ -27,6 +27,9 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 
+from sklearn.model_selection import TimeSeriesSplit
+from sklearn.model_selection import GridSearchCV
+
 import time
 
 def readMasterData(dataset_type='Matthew'):
@@ -45,9 +48,17 @@ def ar1model(data,lag=1):
     return ar1_fit
 
 def elasticNetModel(X,y):
-    elastic = ElasticNet(max_iter=30000,tol=1e-5)
-    elastic_fit = elastic.fit(X,y)
-    return elastic_fit
+    parameters = {'alpha':[0.5,1,1.5],
+                'l1_ratio':np.linspace(0,1,10),
+                'fit_intercept':(True,False),
+                'max_iter':[1000,2000,300],
+                'tol':[1e-5,1e-4,1e-3]}
+    elastic = ElasticNet()
+    elastic_cv = GridSearchCV(elastic,parameters,cv=TimeSeriesSplit)
+    elastic_cv_fit = elastic_cv.fit(X,y)
+    best_params = elastic_cv_fit.best_params_
+    elastic_model = ElasticNet(best_params['alpha'],best_params['l1_ratio'],best_params['fit_intercept'],best_parms['max_iter'],best_params['tol'])
+    return elastic_model.fit(X,y)
 
 def gradientBoostingTrees(X,y):
     gb_tree = GradientBoostingRegressor()
@@ -101,36 +112,24 @@ def rollingWindow(start_predict='2018-07-01',end_predict='2018-12-31'):
     y_train_scaled = scalerGDP.transform(y_train)
     y_train = pd.DataFrame(y_train_scaled,columns=y_train.columns,index=y_train.index)['GDP']
 
-    print(type(X_train),type(y_train))
-
-
     prediction_df = makePredictionDF(start_predict,end_predict)
 
     for date in prediction_df.index:
         print('Making predictions for: ',date)
         X = X_train.loc[:date]
         y = y_train.loc[:date]
-        
-        print('Beginning to estimate models')
+    
         elastic = elasticNetModel(X,y)
-        print('Elastic Net estimated')
         gb_tree = gradientBoostingTrees(X,y)
-        print('Gradient Boosting Tree estimated')
         lasso = LASSO(X,y)
-        print('Lasso estimated')
         ridge = RIDGE(X,y)
-        print('Ridge estimated')
         neural = NeuralNet(X,y)
-        print('Neural Net estimated')
         svm = SVM_model(X,y)
-        print('SVM estimated')
         ar1 = ar1model(y)
-        print('AR(1) estimated')
         
         closest_date = X.index.get_loc(date,method='nearest')
         X_date = X.loc[X.index[closest_date],:].values.reshape(1, -1)
         
-        print('Generating predictions')
         ar1_predict = ar1.predict(closest_date).values[0]
         elastic_predict = elastic.predict(X_date)
         gb_tree_predict = gb_tree.predict(X_date)
@@ -148,12 +147,11 @@ def rollingWindow(start_predict='2018-07-01',end_predict='2018-12-31'):
         prediction_df.loc[date,'SVM'] = svm_predict
         prediction_df.loc[date,'Model Avg.'] = (elastic_predict+gb_tree_predict+lasso_predict+ridge_predict+neural_predict+svm_predict)/6
 
-        print('Predictions for this quarter complete')
 
     for model in ['AR(1)','Elastic Net','Gradient Boosting','LASSO','Ridge','Neural Net','SVM','Model Avg.']:
         prediction_df[model] = scalerGDP.inverse_transform(prediction_df[model])
     print("--- %s seconds ---" % (time.time() - start))
-    return prediction_df
+    return prediction_df.astype(int)
 
 
 def findRMSE(df):
@@ -161,7 +159,7 @@ def findRMSE(df):
     actual = df['GDP']
     root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[],'Model Avg.':[]}
     for col in predictions:
-        rmse = np.sqrt(mean_squared_error(actual,predictions[col]))
+        rmse = np.sqrt(np.abs(mean_squared_error(actual,predictions[col])))
         root_errors[col] = [rmse]
     rmse_df = pd.DataFrame(root_errors,index=['RMSE'])
     return rmse_df
