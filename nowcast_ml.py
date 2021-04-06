@@ -200,8 +200,12 @@ def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
 
     for model in ['AR(1)','Elastic Net','Gradient Boosting','LASSO','Ridge','Neural Net','SVM','Model Avg.']:
         prediction_df[model] = scalerGDP.inverse_transform(prediction_df[model])
-    print("--- %s seconds ---" % (time.time() - start))
-    print("%s minutes" % ((time.time() - start)//60),' and ',"%s seconds" % ((time.time() - start)-(time.time() - start)//60)*60)
+    total_seconds = (time.time() - start)
+    print("--- %s seconds ---" % total_seconds)
+    minutes = seconds //60
+    remaining_seconds = int(total_seconds*60)-minutes
+    print("%s minutes" % minutes)
+    print("%s seconds" % remaining_seconds)
     return prediction_df.astype(int)
 
 
