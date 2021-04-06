@@ -7,8 +7,6 @@ machine learning models to nowcast Canadian GDP from 1960 through to 2020.
 In addition, the predictive performance of these models will be assessed and compared to the predicitive accuracy
 of a benchmark AR(1) model.
 """
-
-# Imports
 import numpy as np
 import pandas as pd
 from data_clean import createMasterData
@@ -149,7 +147,9 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
         GDP[model] = np.nan
     return GDP.loc[start_predict:end_predict]
 
+
 def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
+
     start = time.time()
     master = readMasterData()
     master.index = pd.DatetimeIndex(master.index).to_period('D')
@@ -202,25 +202,37 @@ def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
         prediction_df[model] = scalerGDP.inverse_transform(prediction_df[model])
     total_seconds = (time.time() - start)
     print("--- %s seconds ---" % total_seconds)
+    minutes = total_seconds //60
+    remaining_seconds = int(total_seconds*60)-minutes
+    print("%s minutes" % minutes)
+    print("%s seconds" % remaining_seconds)
+
     hours = int(total_seconds//(60*60))
     remaining_seconds = int(total_seconds-hours*60*60)
     minutes = remaining_seconds //60
     seconds = int(total_seconds-((hours*60*60)+(minutes*60)))
     print(f"Total Runtime: {hours} hours, {minutes} minutes, and {seconds} seconds")
+
     return prediction_df.astype(int)
 
 
 def findRMSE(df):
     actual = df['GDP']
+    nrow = len(df)
     predictions = df.drop('GDP',axis=1)
     root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[],'Model Avg.':[]}
     for col in predictions:
+
+        rmse = np.sqrt(abs((1/nrow)*((actual - predictions[col])** 2)))
+        root_errors[col] = [rmse]
+    rmse_df = pd.DataFrame(root_errors,index=['RMSE'])
         diff = (actual-predictions[col])
         diff_square = np.abs(diff**2)
         rmse = np.sqrt(np.mean(diff_square))
         mape = np.mean((np.abs(actual-predictions[col])/actual))*100
         root_errors[col] = [rmse,mape]
     rmse_df = pd.DataFrame(root_errors,index=['RMSE','MAPE'])
+
     return rmse_df
 
 if __name__ == '__main__':
@@ -228,5 +240,4 @@ if __name__ == '__main__':
     print(df)
     print(findRMSE(df))
     
-
-
+d = findRMSE(df)
