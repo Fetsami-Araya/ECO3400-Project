@@ -54,7 +54,7 @@ def ar1model(data,lag=1):
 @ ignore_warnings (category=ConvergenceWarning)
 def elasticNetModel(X,y):
     parameters = {'alpha':[0.5,1,1.5],
-                'l1_ratio':np.linspace(0,1,5),
+                'l1_ratio':np.linspace(0,1,10),
                 'fit_intercept':(True,False),
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
@@ -68,8 +68,8 @@ def elasticNetModel(X,y):
 @ ignore_warnings (category=ConvergenceWarning)
 def gradientBoostingTrees(X,y):
     parameters = {'loss':('ls','huber'),
-                'learning_rate':np.linspace(0.1,1,5),
-                'n_estimators':[100,300]}
+                'learning_rate':np.linspace(0.1,1,10),
+                'n_estimators':[100,300,500]}
     gb_tree = GradientBoostingRegressor()
     gb_tree_cv = RandomizedSearchCV(gb_tree, parameters,cv=TimeSeriesSplit(n_splits=3))
     gb_tree_cv_fit = gb_tree_cv.fit(X,y)
@@ -103,10 +103,23 @@ def RIDGE(X, y):
     ridgefit = Ridge(alpha=best_params['alpha'], max_iter=best_params['max_iter'],tol=best_params['tol']).fit(X,y)
     return ridgefit
 
+@ ignore_warnings (category=ConvergenceWarning)
 def NeuralNet(X,y):
-    neural = MLPRegressor(hidden_layer_sizes=(50,50,50,50,50),activation="relu" ,random_state=1, max_iter=5000)
-    neural_fit = neural.fit(X, y)
-    return neural
+    param_grid = {'hidden_layer_sizes': [(50,50,50,50,50), (50,50,50,50), (100,100,100,100,100), (100, 100, 100, 100)],
+          'activation': ['relu','tanh','logistic'],
+          'alpha': [0.0001, 0.05],
+          'learning_rate': ['constant','adaptive'],
+          'solver': ['adam']}
+    neural = MLPRegressor()
+    neural_cv = RandomizedSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=3))
+    neural_cv_fit = neural_cv.fit(X,y)
+    best_params = neural_cv_fit.best_params_
+    neural_mlp = MLPRegressor(hidden_layer_sizes = best_params["hidden_layer_sizes"], 
+                        activation =best_params["activation"],
+                        solver=best_params["solver"],
+                        max_iter= 5000, n_iter_no_change = 200
+              )
+    return neural_mlp.fit(X,y)
 
 @ ignore_warnings (category=ConvergenceWarning)
 def SVM_model(X,y):
@@ -188,15 +201,16 @@ def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
     for model in ['AR(1)','Elastic Net','Gradient Boosting','LASSO','Ridge','Neural Net','SVM','Model Avg.']:
         prediction_df[model] = scalerGDP.inverse_transform(prediction_df[model])
     print("--- %s seconds ---" % (time.time() - start))
+    print("%s minutes" % ((time.time() - start)//60),' and ',"%s seconds" % ((time.time() - start)-(time.time() - start)//60)*60)
     return prediction_df.astype(int)
 
 
 def findRMSE(df):
-    predictions = df.drop('GDP',axis=1)
     actual = df['GDP']
+    predictions = df.drop('GDP',axis=1)
     root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[],'Model Avg.':[]}
     for col in predictions:
-        rmse = np.sqrt(np.abs(mean_squared_error(actual,predictions[col])))
+        rmse = np.sqrt(mean_squared_error(actual,predictions[col]))
         root_errors[col] = [rmse]
     rmse_df = pd.DataFrame(root_errors,index=['RMSE'])
     return rmse_df
@@ -204,7 +218,7 @@ def findRMSE(df):
 if __name__ == '__main__':
     df = rollingWindow().fillna(0)
     print(df)
-    print(findRMSE(df))
+    #print(findRMSE(df))
     
 
 
