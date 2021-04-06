@@ -57,7 +57,7 @@ def elasticNetModel(X,y):
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
     elastic = ElasticNet()
-    elastic_cv = RandomizedSearchCV(elastic,parameters,cv=TimeSeriesSplit(n_splits=3))
+    elastic_cv = RandomizedSearchCV(elastic,parameters,cv=TimeSeriesSplit(n_splits=2))
     elastic_cv_fit = elastic_cv.fit(X,y)
     best_params = elastic_cv_fit.best_params_
     elastic_model = ElasticNet(alpha=best_params['alpha'],l1_ratio=best_params['l1_ratio'],fit_intercept=best_params['fit_intercept'],max_iter=best_params['max_iter'],tol=best_params['tol'])
@@ -69,7 +69,7 @@ def gradientBoostingTrees(X,y):
                 'learning_rate':np.linspace(0.1,1,10),
                 'n_estimators':[100,300,500]}
     gb_tree = GradientBoostingRegressor()
-    gb_tree_cv = RandomizedSearchCV(gb_tree, parameters,cv=TimeSeriesSplit(n_splits=3))
+    gb_tree_cv = RandomizedSearchCV(gb_tree, parameters,cv=TimeSeriesSplit(n_splits=2))
     gb_tree_cv_fit = gb_tree_cv.fit(X,y)
     best_params = gb_tree_cv_fit.best_params_
     gb_tree_fit = GradientBoostingRegressor(loss=best_params['loss'],n_estimators=best_params['n_estimators'],learning_rate=best_params['learning_rate']).fit(X,y)
@@ -82,7 +82,7 @@ def LASSO(X, y):
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
     lasso = Lasso()
-    lasso_cv = RandomizedSearchCV(lasso,parameters,cv=TimeSeriesSplit(n_splits=3))
+    lasso_cv = RandomizedSearchCV(lasso,parameters,cv=TimeSeriesSplit(n_splits=2))
     lasso_cv_fit = lasso_cv.fit(X,y)
     best_params = lasso_cv_fit.best_params_
     lassofit = Lasso(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_intercept'],tol=best_params['tol']).fit(X,y)
@@ -95,7 +95,7 @@ def RIDGE(X, y):
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
     ridge = Ridge()
-    ridge_cv = RandomizedSearchCV(ridge,parameters,cv=TimeSeriesSplit(n_splits=3))
+    ridge_cv = RandomizedSearchCV(ridge,parameters,cv=TimeSeriesSplit(n_splits=2))
     ridge_cv_fit = ridge_cv.fit(X,y)
     best_params = ridge_cv_fit.best_params_
     ridgefit = Ridge(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_intercept'],tol=best_params['tol']).fit(X,y)
@@ -109,14 +109,12 @@ def NeuralNet(X,y):
           'learning_rate': ['constant','adaptive'],
           'solver': ['adam']}
     neural = MLPRegressor()
-    neural_cv = RandomizedSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=3))
+    neural_cv = RandomizedSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=2))
     neural_cv_fit = neural_cv.fit(X,y)
     best_params = neural_cv_fit.best_params_
     neural_mlp = MLPRegressor(hidden_layer_sizes = best_params["hidden_layer_sizes"], 
                         activation =best_params["activation"],
-                        solver=best_params["solver"],
-                        max_iter= 5000, n_iter_no_change = 200
-              )
+                        solver=best_params["solver"])
     return neural_mlp.fit(X,y)
 
 @ ignore_warnings (category=ConvergenceWarning)
@@ -148,7 +146,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     return GDP.loc[start_predict:end_predict]
 
 
-def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2020-10-01',end_predict='2020-12-31'):
 
     start = time.time()
     master = readMasterData()
@@ -201,12 +199,6 @@ def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
     for model in ['AR(1)','Elastic Net','Gradient Boosting','LASSO','Ridge','Neural Net','SVM','Model Avg.']:
         prediction_df[model] = scalerGDP.inverse_transform(prediction_df[model])
     total_seconds = (time.time() - start)
-    print("--- %s seconds ---" % total_seconds)
-    minutes = total_seconds //60
-    remaining_seconds = int(total_seconds*60)-minutes
-    print("%s minutes" % minutes)
-    print("%s seconds" % remaining_seconds)
-
     hours = int(total_seconds//(60*60))
     remaining_seconds = int(total_seconds-hours*60*60)
     minutes = remaining_seconds //60
@@ -222,10 +214,11 @@ def findRMSE(df):
     predictions = df.drop('GDP',axis=1)
     root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[],'Model Avg.':[]}
     for col in predictions:
-        rmse = np.sqrt(abs((1/nrow)*((actual - predictions[col])** 2)))
+        rmse = np.sqrt(np.mean(abs((1/nrow)*((actual - predictions[col])** 2))))
         mape = np.mean((np.abs(actual-predictions[col])/actual))*100
         root_errors[col] = [rmse,mape]
-    rmse_df = pd.DataFrame(root_errors,index=['RMSE','MAPE'])
+    rmse_df = pd.DataFrame(root_errors,index=['RMSE','MAPE']).T
+    rmse_df = rmse_df.sort_values(by=['RMSE','MAPE'])
 
     return rmse_df
 
@@ -233,5 +226,3 @@ if __name__ == '__main__':
     df = rollingWindow().fillna(0)
     print(df)
     print(findRMSE(df))
-    
-d = findRMSE(df)
