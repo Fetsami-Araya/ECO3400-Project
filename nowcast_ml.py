@@ -217,7 +217,7 @@ def findRMSE(df):
         diff = (actual-predictions[col])
         diff_square = np.abs(diff**2)
         rmse = np.sqrt(np.mean(diff_square))
-        mape = np.mean((np.abs(actual-predictions[col])/actual))
+        mape = np.mean((np.abs(actual-predictions[col])/actual))*100
         root_errors[col] = [rmse,mape]
     rmse_df = pd.DataFrame(root_errors,index=['RMSE','MAPE'])
     return rmse_df
