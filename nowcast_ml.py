@@ -79,7 +79,7 @@ def gradientBoostingTrees(X,y):
 
 @ ignore_warnings (category=ConvergenceWarning)
 def LASSO(X, y):
-    parameters = {'alpha':[0.5,1,1.5],
+    parameters = {'alpha':[0.5,0.7,1],
                 'fit_intercept':(True,False),
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
@@ -87,7 +87,7 @@ def LASSO(X, y):
     lasso_cv = RandomizedSearchCV(lasso,parameters,cv=TimeSeriesSplit(n_splits=3))
     lasso_cv_fit = lasso_cv.fit(X,y)
     best_params = lasso_cv_fit.best_params_
-    lassofit = Lasso(alpha=best_params['alpha'], max_iter=best_params['max_iter'],tol=best_params['tol']).fit(X,y)
+    lassofit = Lasso(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_inter'],tol=best_params['tol']).fit(X,y)
     return lassofit
 
 @ ignore_warnings (category=ConvergenceWarning)
@@ -100,7 +100,7 @@ def RIDGE(X, y):
     ridge_cv = RandomizedSearchCV(ridge,parameters,cv=TimeSeriesSplit(n_splits=3))
     ridge_cv_fit = ridge_cv.fit(X,y)
     best_params = ridge_cv_fit.best_params_
-    ridgefit = Ridge(alpha=best_params['alpha'], max_iter=best_params['max_iter'],tol=best_params['tol']).fit(X,y)
+    ridgefit = Ridge(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_inter'],tol=best_params['tol']).fit(X,y)
     return ridgefit
 
 @ ignore_warnings (category=ConvergenceWarning)
@@ -202,8 +202,8 @@ def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
         prediction_df[model] = scalerGDP.inverse_transform(prediction_df[model])
     total_seconds = (time.time() - start)
     print("--- %s seconds ---" % total_seconds)
-    minutes = seconds //60
-    remaining_seconds = int(total_seconds*60)-minutes
+    minutes = total_seconds //60
+    remaining_seconds = int(total_seconds-minutes*60)
     print("%s minutes" % minutes)
     print("%s seconds" % remaining_seconds)
     return prediction_df.astype(int)
@@ -214,15 +214,18 @@ def findRMSE(df):
     predictions = df.drop('GDP',axis=1)
     root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[],'Model Avg.':[]}
     for col in predictions:
-        rmse = np.sqrt(mean_squared_error(actual,predictions[col]))
-        root_errors[col] = [rmse]
-    rmse_df = pd.DataFrame(root_errors,index=['RMSE'])
+        diff = (actual-predictions[col])
+        diff_square = np.abs(diff**2)
+        rmse = np.sqrt(np.mean(diff_square))
+        mape = np.mean((np.abs(actual-predictions[col])/actual))
+        root_errors[col] = [rmse,mape]
+    rmse_df = pd.DataFrame(root_errors,index=['RMSE','MAPE'])
     return rmse_df
 
 if __name__ == '__main__':
     df = rollingWindow().fillna(0)
     print(df)
-    #print(findRMSE(df))
+    print(findRMSE(df))
     
 
 
