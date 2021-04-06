@@ -87,7 +87,7 @@ def LASSO(X, y):
     lasso_cv = RandomizedSearchCV(lasso,parameters,cv=TimeSeriesSplit(n_splits=3))
     lasso_cv_fit = lasso_cv.fit(X,y)
     best_params = lasso_cv_fit.best_params_
-    lassofit = Lasso(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_inter'],tol=best_params['tol']).fit(X,y)
+    lassofit = Lasso(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_intercept'],tol=best_params['tol']).fit(X,y)
     return lassofit
 
 @ ignore_warnings (category=ConvergenceWarning)
@@ -100,7 +100,7 @@ def RIDGE(X, y):
     ridge_cv = RandomizedSearchCV(ridge,parameters,cv=TimeSeriesSplit(n_splits=3))
     ridge_cv_fit = ridge_cv.fit(X,y)
     best_params = ridge_cv_fit.best_params_
-    ridgefit = Ridge(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_inter'],tol=best_params['tol']).fit(X,y)
+    ridgefit = Ridge(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_intercept'],tol=best_params['tol']).fit(X,y)
     return ridgefit
 
 @ ignore_warnings (category=ConvergenceWarning)
