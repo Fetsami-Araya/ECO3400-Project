@@ -219,17 +219,10 @@ def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
 def findRMSE(df):
     nrow = len(df)
     actual = df['GDP']
-    nrow = len(df)
     predictions = df.drop('GDP',axis=1)
     root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[],'Model Avg.':[]}
     for col in predictions:
-
         rmse = np.sqrt(abs((1/nrow)*((actual - predictions[col])** 2)))
-        root_errors[col] = [rmse]
-    rmse_df = pd.DataFrame(root_errors,index=['RMSE'])
-        diff = (actual-predictions[col])
-        diff_square = (1/nrow)*np.abs(diff**2)
-        rmse = np.sqrt(np.mean(diff_square))
         mape = np.mean((np.abs(actual-predictions[col])/actual))*100
         root_errors[col] = [rmse,mape]
     rmse_df = pd.DataFrame(root_errors,index=['RMSE','MAPE'])
