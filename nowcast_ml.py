@@ -149,7 +149,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
         GDP[model] = np.nan
     return GDP.loc[start_predict:end_predict]
 
-def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
     start = time.time()
     master = readMasterData()
     master.index = pd.DatetimeIndex(master.index).to_period('D')
@@ -202,10 +202,11 @@ def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
         prediction_df[model] = scalerGDP.inverse_transform(prediction_df[model])
     total_seconds = (time.time() - start)
     print("--- %s seconds ---" % total_seconds)
-    minutes = total_seconds //60
-    remaining_seconds = int(total_seconds-minutes*60)
-    print("%s minutes" % minutes)
-    print("%s seconds" % remaining_seconds)
+    hours = int(total_seconds//(60*60))
+    remaining_seconds = int(total_seconds-hours*60*60)
+    minutes = remaining_seconds //60
+    seconds = int(total_seconds-((hours*60*60)+(minutes*60)))
+    print(f"Total Runtime: {hours} hours, {minutes} minutes, and {seconds} seconds")
     return prediction_df.astype(int)
 
 
