@@ -149,7 +149,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
         GDP[model] = np.nan
     return GDP.loc[start_predict:end_predict]
 
-def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2020-10-01',end_predict='2020-12-31'):
     start = time.time()
     master = readMasterData()
     master.index = pd.DatetimeIndex(master.index).to_period('D')
@@ -211,12 +211,13 @@ def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
 
 
 def findRMSE(df):
+    nrow = len(df)
     actual = df['GDP']
     predictions = df.drop('GDP',axis=1)
     root_errors = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'AR(1)':[],'Model Avg.':[]}
     for col in predictions:
         diff = (actual-predictions[col])
-        diff_square = np.abs(diff**2)
+        diff_square = (1/nrow)*np.abs(diff**2)
         rmse = np.sqrt(np.mean(diff_square))
         mape = np.mean((np.abs(actual-predictions[col])/actual))*100
         root_errors[col] = [rmse,mape]
