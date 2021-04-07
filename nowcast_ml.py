@@ -57,7 +57,7 @@ def elasticNetModel(X,y):
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
     elastic = ElasticNet()
-    elastic_cv = RandomizedSearchCV(elastic,parameters,cv=TimeSeriesSplit(n_splits=2))
+    elastic_cv = RandomizedSearchCV(elastic,parameters,cv=TimeSeriesSplit(n_splits=5))
     elastic_cv_fit = elastic_cv.fit(X,y)
     best_params = elastic_cv_fit.best_params_
     elastic_model = ElasticNet(alpha=best_params['alpha'],l1_ratio=best_params['l1_ratio'],fit_intercept=best_params['fit_intercept'],max_iter=best_params['max_iter'],tol=best_params['tol'])
@@ -69,7 +69,7 @@ def gradientBoostingTrees(X,y):
                 'learning_rate':np.linspace(0.1,1,10),
                 'n_estimators':[100,300,500]}
     gb_tree = GradientBoostingRegressor()
-    gb_tree_cv = RandomizedSearchCV(gb_tree, parameters,cv=TimeSeriesSplit(n_splits=2))
+    gb_tree_cv = RandomizedSearchCV(gb_tree, parameters,cv=TimeSeriesSplit(n_splits=5))
     gb_tree_cv_fit = gb_tree_cv.fit(X,y)
     best_params = gb_tree_cv_fit.best_params_
     gb_tree_fit = GradientBoostingRegressor(loss=best_params['loss'],n_estimators=best_params['n_estimators'],learning_rate=best_params['learning_rate']).fit(X,y)
@@ -77,12 +77,12 @@ def gradientBoostingTrees(X,y):
 
 @ ignore_warnings (category=ConvergenceWarning)
 def LASSO(X, y):
-    parameters = {'alpha':[0.5,0.7,1],
+    parameters = {'alpha':[0.5,0.7,1,1.5],
                 'fit_intercept':(True,False),
-                'max_iter':[3000,5000,6000],
+                'max_iter':[3000,5000],
                 'tol':[1e-5,1e-6]}
     lasso = Lasso()
-    lasso_cv = RandomizedSearchCV(lasso,parameters,cv=TimeSeriesSplit(n_splits=2))
+    lasso_cv = RandomizedSearchCV(lasso,parameters,cv=TimeSeriesSplit(n_splits=5))
     lasso_cv_fit = lasso_cv.fit(X,y)
     best_params = lasso_cv_fit.best_params_
     lassofit = Lasso(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_intercept'],tol=best_params['tol']).fit(X,y)
@@ -95,7 +95,7 @@ def RIDGE(X, y):
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
     ridge = Ridge()
-    ridge_cv = RandomizedSearchCV(ridge,parameters,cv=TimeSeriesSplit(n_splits=2))
+    ridge_cv = RandomizedSearchCV(ridge,parameters,cv=TimeSeriesSplit(n_splits=5))
     ridge_cv_fit = ridge_cv.fit(X,y)
     best_params = ridge_cv_fit.best_params_
     ridgefit = Ridge(alpha=best_params['alpha'], max_iter=best_params['max_iter'],fit_intercept=best_params['fit_intercept'],tol=best_params['tol']).fit(X,y)
@@ -104,28 +104,27 @@ def RIDGE(X, y):
 @ ignore_warnings (category=ConvergenceWarning)
 def NeuralNet(X,y):
     param_grid = {'hidden_layer_sizes': [(50,50,50,50,50), (50,50,50,50), (100,100,100,100,100), (100, 100, 100, 100)],
-          'activation': ['relu','tanh','logistic'],
-          'alpha': [0.0001, 0.05],
+          'alpha': [0.001, 0.01, 0.05],
           'learning_rate': ['constant','adaptive'],
           'solver': ['adam']}
     neural = MLPRegressor()
-    neural_cv = RandomizedSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=2))
+    neural_cv = RandomizedSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=5))
     neural_cv_fit = neural_cv.fit(X,y)
     best_params = neural_cv_fit.best_params_
     neural_mlp = MLPRegressor(hidden_layer_sizes = best_params["hidden_layer_sizes"], 
-                        activation =best_params["activation"],
+                        activation ='relu',
                         solver=best_params["solver"])
     return neural_mlp.fit(X,y)
 
 @ ignore_warnings (category=ConvergenceWarning)
 def SVM_model(X,y):
     parameters = {'kernel':('rbf','linear','poly'),
-                'degree' : [3,5],
+                'degree' : [2,3,5],
                 'gamma' : ('scale','auto'),
                 'C': [1,10],
                 'epsilon' : np.linspace(0.1,0.7,3)}
     svr = SVR()
-    svr_cv = RandomizedSearchCV(svr, parameters,cv=TimeSeriesSplit(n_splits=3))
+    svr_cv = RandomizedSearchCV(svr, parameters,cv=TimeSeriesSplit(n_splits=5))
     svr_cv_fit = svr_cv.fit(X,y)
     best_params = svr_cv_fit.best_params_
     svr_fit = SVR(kernel=best_params['kernel'],degree=best_params['degree'],gamma=best_params['gamma'],epsilon=best_params['epsilon']).fit(X,y)
@@ -146,7 +145,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     return GDP.loc[start_predict:end_predict]
 
 
-def rollingWindow(start_predict='2020-10-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
 
     start = time.time()
     master = readMasterData()
