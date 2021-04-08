@@ -106,8 +106,8 @@ def NeuralNet(X,y):
     param_grid = {'hidden_layer_sizes': [(25,25,25),(50,50,50,50,50), (50,50,50,50), (100,100,100,100,100), (200, 200, 200, 200)],
           'alpha': [0.001, 0.0001, 0.10],
           'learning_rate': ('constant','adaptive','invscaling'),
-          'activation': 'relu',
-          'solver': 'adam',
+          'activation': ['relu'],
+          'solver': ['adam'],
           'learning_rate_init': [0.001,0.01,0.05,0.1,0.25],
           'max_iter': [200,350,500,600],
           'shuffle': (True,False)}
