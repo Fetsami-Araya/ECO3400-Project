@@ -130,7 +130,7 @@ def SVM_model(X,y):
                 'gamma' : ('scale','auto'),
                 'C': [1,2,5,10,20],
                 'epsilon' : np.linspace(0.1,2,2),
-                'shrinking': ('True','False'),
+                'shrinking': (True,False),
                 'max_iter': [1,5,10,20]}
     svr = SVR()
     svr_cv = RandomizedSearchCV(svr, parameters,cv=TimeSeriesSplit(n_splits=5))
