@@ -110,7 +110,7 @@ def NeuralNet(X,y):
           'solver': ('adam','sgd','lbfgs'),
           'learning_rate_init': [0.001,0.01,0.05,0.1,0.25],
           'max_iter': [200,350,500,600],
-          'shuffle': ('True','False')}
+          'shuffle': (True,False)}
     neural = MLPRegressor()
     neural_cv = RandomizedSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=5))
     neural_cv_fit = neural_cv.fit(X,y)
