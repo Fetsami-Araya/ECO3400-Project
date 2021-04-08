@@ -112,7 +112,7 @@ def NeuralNet(X,y):
           'max_iter': [200,350,500,600],
           'shuffle': ('True','False')}
     neural = MLPRegressor()
-    neural_cv = GridSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=5))
+    neural_cv = RandomizedSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=5))
     neural_cv_fit = neural_cv.fit(X,y)
     best_params = neural_cv_fit.best_params_
     neural_mlp = MLPRegressor(hidden_layer_sizes = best_params["hidden_layer_sizes"], 
@@ -133,7 +133,7 @@ def SVM_model(X,y):
                 'shrinking': ('True','False'),
                 'max_iter': [1,5,10,20]}
     svr = SVR()
-    svr_cv = GridSearchCV(svr, parameters,cv=TimeSeriesSplit(n_splits=5))
+    svr_cv = RandomizedSearchCV(svr, parameters,cv=TimeSeriesSplit(n_splits=5))
     svr_cv_fit = svr_cv.fit(X,y)
     best_params = svr_cv_fit.best_params_
     svr_fit = SVR(kernel=best_params['kernel'],degree=best_params['degree'],gamma=best_params['gamma'],C= best_params['C'],epsilon=best_params['epsilon'], 
