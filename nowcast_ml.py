@@ -2,7 +2,7 @@
 @Date: March 20, 2021
 @Authors: Fetsami Araya
 @Description: This file will estimate LASSO, Ridge, Elastic Net, Gradient Boosting Tree, SVM, and neural network
-machine learning models to nowcast Canadian GDP from 1960 through to 2020.
+machine learning models to nowcast Canadian GDP from 1992 through to 2020.
 
 In addition, the predictive performance of these models will be assessed and compared to the predicitive accuracy
 of a benchmark AR(1) model.
@@ -103,31 +103,41 @@ def RIDGE(X, y):
 
 @ ignore_warnings (category=ConvergenceWarning)
 def NeuralNet(X,y):
-    param_grid = {'hidden_layer_sizes': [(50,50,50,50,50), (50,50,50,50), (100,100,100,100,100), (100, 100, 100, 100)],
-          'alpha': [0.001, 0.01, 0.05, 0.1],
-          'learning_rate': ['constant','adaptive'],
-          'solver': ['adam']}
+    param_grid = {'hidden_layer_sizes': [(25,25,25),(50,50,50,50,50), (50,50,50,50), (100,100,100,100,100), (200, 200, 200, 200)],
+          'alpha': [0.001, 0.0001, 0.10],
+          'learning_rate': ('constant','adaptive','invscaling'),
+          'activation': ('relu', 'tanh','logistic','identity'),
+          'solver': ('adam','sgd','lbfgs'),
+          'learning_rate_init': [0.001,0.01,0.05,0.1,0.25],
+          'max_iter': [200,350,500,600],
+          'shuffle': ('True','False')}
     neural = MLPRegressor()
-    neural_cv = RandomizedSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=5))
+    neural_cv = GridSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=5))
     neural_cv_fit = neural_cv.fit(X,y)
     best_params = neural_cv_fit.best_params_
     neural_mlp = MLPRegressor(hidden_layer_sizes = best_params["hidden_layer_sizes"], 
-                        activation ='relu',
-                        solver=best_params["solver"])
+                        activation= best_params['activation'],
+                        solver= best_params["solver"], alpha=best_params['alpha'],
+                        learning_rate=best_params['learning_rate'],
+                        learning_rate_init= best_params['learning_rate_init'], max_iter= best_params['max-iter'],
+                        shuffle= best_params['shuffle'])
     return neural_mlp.fit(X,y)
 
 @ ignore_warnings (category=ConvergenceWarning)
 def SVM_model(X,y):
-    parameters = {'kernel':('rbf','linear','poly'),
-                'degree' : [2,3,5,7],
+    parameters = {'kernel':('rbf','linear','poly','sigmoid','precomputed'),
+                'degree' : [2,3,5,6,8],
                 'gamma' : ('scale','auto'),
-                'C': [1,5,7,10],
-                'epsilon' : np.linspace(0.1,0.7,10)}
+                'C': [1,2,5,10,20],
+                'epsilon' : np.linspace(0.1,2,2),
+                'shrinking': ('True','False'),
+                'max_iter': [1,5,10,20]}
     svr = SVR()
-    svr_cv = RandomizedSearchCV(svr, parameters,cv=TimeSeriesSplit(n_splits=5))
+    svr_cv = GridSearchCV(svr, parameters,cv=TimeSeriesSplit(n_splits=5))
     svr_cv_fit = svr_cv.fit(X,y)
     best_params = svr_cv_fit.best_params_
-    svr_fit = SVR(kernel=best_params['kernel'],degree=best_params['degree'],gamma=best_params['gamma'],epsilon=best_params['epsilon']).fit(X,y)
+    svr_fit = SVR(kernel=best_params['kernel'],degree=best_params['degree'],gamma=best_params['gamma'],C= best_params['C'],epsilon=best_params['epsilon'], 
+                  shrinking= best_params['shrinking'], max_iter= best_params['max_iter']).fit(X,y)
     return svr_fit
 
 
