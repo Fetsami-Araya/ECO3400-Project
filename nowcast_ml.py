@@ -77,9 +77,9 @@ def gradientBoostingTrees(X,y):
 
 @ ignore_warnings (category=ConvergenceWarning)
 def LASSO(X, y):
-    parameters = {'alpha':[0.5,0.7,1,1.5],
+    parameters = {'alpha':[0.5,1,1.5],
                 'fit_intercept':(True,False),
-                'max_iter':[3000,5000],
+                'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
     lasso = Lasso()
     lasso_cv = RandomizedSearchCV(lasso,parameters,cv=TimeSeriesSplit(n_splits=5))
@@ -104,7 +104,7 @@ def RIDGE(X, y):
 @ ignore_warnings (category=ConvergenceWarning)
 def NeuralNet(X,y):
     param_grid = {'hidden_layer_sizes': [(50,50,50,50,50), (50,50,50,50), (100,100,100,100,100), (100, 100, 100, 100)],
-          'alpha': [0.001, 0.01, 0.05],
+          'alpha': [0.001, 0.01, 0.05, 0.1],
           'learning_rate': ['constant','adaptive'],
           'solver': ['adam']}
     neural = MLPRegressor()
@@ -119,10 +119,10 @@ def NeuralNet(X,y):
 @ ignore_warnings (category=ConvergenceWarning)
 def SVM_model(X,y):
     parameters = {'kernel':('rbf','linear','poly'),
-                'degree' : [2,3,5],
+                'degree' : [2,3,5,7],
                 'gamma' : ('scale','auto'),
-                'C': [1,10],
-                'epsilon' : np.linspace(0.1,0.7,3)}
+                'C': [1,5,7,10],
+                'epsilon' : np.linspace(0.1,0.7,10)}
     svr = SVR()
     svr_cv = RandomizedSearchCV(svr, parameters,cv=TimeSeriesSplit(n_splits=5))
     svr_cv_fit = svr_cv.fit(X,y)
@@ -145,7 +145,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     return GDP.loc[start_predict:end_predict]
 
 
-def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
 
     start = time.time()
     master = readMasterData()
