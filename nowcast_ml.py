@@ -119,7 +119,7 @@ def NeuralNet(X,y):
                         activation= best_params['activation'],
                         solver= best_params["solver"], alpha=best_params['alpha'],
                         learning_rate=best_params['learning_rate'],
-                        learning_rate_init= best_params['learning_rate_init'], max_iter= best_params['max-iter'],
+                        learning_rate_init= best_params['learning_rate_init'], max_iter= best_params['maxIiter'],
                         shuffle= best_params['shuffle'])
     return neural_mlp.fit(X,y)
 
