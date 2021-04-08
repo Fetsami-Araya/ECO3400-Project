@@ -105,12 +105,10 @@ def RIDGE(X, y):
 def NeuralNet(X,y):
     param_grid = {'hidden_layer_sizes': [(25,25,25),(50,50,50,50,50), (50,50,50,50), (100,100,100,100,100), (200, 200, 200, 200)],
           'alpha': [0.001, 0.0001, 0.10],
-          'learning_rate': ('constant','adaptive','invscaling'),
+          'learning_rate': ('constant','adaptive'),
           'activation': ['relu'],
           'solver': ['adam'],
-          'learning_rate_init': [0.001,0.01,0.05,0.1,0.25],
-          'max_iter': [200,350,500,600],
-          'shuffle': (True,False)}
+          'max_iter': [200,350,500,600]}
     neural = MLPRegressor()
     neural_cv = RandomizedSearchCV(neural,param_grid,cv=TimeSeriesSplit(n_splits=5))
     neural_cv_fit = neural_cv.fit(X,y)
@@ -119,13 +117,12 @@ def NeuralNet(X,y):
                         activation= best_params['activation'],
                         solver= best_params["solver"], alpha=best_params['alpha'],
                         learning_rate=best_params['learning_rate'],
-                        learning_rate_init= best_params['learning_rate_init'], max_iter= best_params['max_iter'],
-                        shuffle= best_params['shuffle'])
+                        max_iter= best_params['max_iter'])
     return neural_mlp.fit(X,y)
 
 @ ignore_warnings (category=ConvergenceWarning)
 def SVM_model(X,y):
-    parameters = {'kernel':('rbf','linear','poly','sigmoid','precomputed'),
+    parameters = {'kernel':('rbf','linear','poly','sigmoid'),
                 'degree' : [2,3,5,6,8],
                 'gamma' : ('scale','auto'),
                 'C': [1,2,5,10,20],
@@ -155,7 +152,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     return GDP.loc[start_predict:end_predict]
 
 
-def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2020-10-01',end_predict='2020-12-31'):
 
     start = time.time()
     master = readMasterData()
