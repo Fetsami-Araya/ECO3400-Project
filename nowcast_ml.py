@@ -51,8 +51,8 @@ def ar1model(data,lag=1):
 
 @ ignore_warnings (category=ConvergenceWarning)
 def elasticNetModel(X,y):
-    parameters = {'alpha':[0.5,1,1.5],
-                'l1_ratio':np.linspace(0,1,10),
+    parameters = {'alpha':np.logspace(-5, 5, 100, endpoint=True),
+                'l1_ratio':np.arange(0, 1, 0.01),
                 'fit_intercept':(True,False),
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
@@ -77,7 +77,7 @@ def gradientBoostingTrees(X,y):
 
 @ ignore_warnings (category=ConvergenceWarning)
 def LASSO(X, y):
-    parameters = {'alpha':[0.5,1,1.5],
+    parameters = {'alpha':np.arange(0.01, 1, 0.02),
                 'fit_intercept':(True,False),
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
@@ -90,7 +90,7 @@ def LASSO(X, y):
 
 @ ignore_warnings (category=ConvergenceWarning)
 def RIDGE(X, y):
-    parameters = {'alpha':[0.5,1,1.5],
+    parameters = {'alpha':np.linspace(50,500,10),
                 'fit_intercept':(True,False),
                 'max_iter':[3000,5000,6000],
                 'tol':[1e-5,1e-6]}
@@ -125,7 +125,7 @@ def SVM_model(X,y):
     parameters = {'kernel':('rbf','linear','poly','sigmoid'),
                 'degree' : [2,3,5,6,8],
                 'gamma' : ('scale','auto'),
-                'C': [1,2,5,10,20],
+                'C': np.logspace(-0, 4, 8),
                 'epsilon' : np.linspace(0.1,2,2),
                 'shrinking': (True,False),
                 'max_iter': [1,5,10,20]}
@@ -152,7 +152,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     return GDP.loc[start_predict:end_predict]
 
 
-def rollingWindow(start_predict='2020-10-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2020-01-01',end_predict='2020-12-31'):
 
     start = time.time()
     master = readMasterData()
