@@ -224,7 +224,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     return GDP.loc[start_predict:end_predict]
 
 
-def rollingWindow(start_predict='2018-01-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
     """"
     Main function that performs nowcasting. This function uses a pseudo real-time estimation technique that expands the window of data available,
     training and testing each machine learning model on all the data that was available up to that quarter.
