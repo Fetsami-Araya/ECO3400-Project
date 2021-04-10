@@ -35,6 +35,8 @@ import time
 from sklearn.utils._testing import ignore_warnings
 from sklearn.exceptions import ConvergenceWarning
 
+from dm_test import dm_test
+import random
 
 def readMasterData(dataset_type='Matthew'):
     """
@@ -164,7 +166,7 @@ def SVM_model(X,y):
     parameters = {'kernel':('rbf','linear','poly'),
                 'degree' : [3,4,5],
                 'gamma' : ('scale','auto'),
-                'C': np.logspace(-0, 4, 8),
+                'C': [1,2],
                 'shrinking': (True,False)}
     svr = SVR(cache_size=7000)
     svr_cv = RandomizedSearchCV(svr, parameters,cv=TimeSeriesSplit(n_splits=5))
@@ -224,7 +226,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     return GDP.loc[start_predict:end_predict]
 
 
-def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2020-07-01',end_predict='2020-12-31'):
     """"
     Main function that performs nowcasting. This function uses a pseudo real-time estimation technique that expands the window of data available,
     training and testing each machine learning model on all the data that was available up to that quarter.
@@ -271,8 +273,8 @@ def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
         print('Neural Net')
         neural = NeuralNet(X,y)
         print('SVM')
-        #svm = SVM_model(X,y)
-        svm = SGD_model(X,y)
+        svm = SVM_model(X,y)
+        #svm = SGD_model(X,y)
         print('AR(1)')
         ar1 = ar1model(y)
         
@@ -328,10 +330,33 @@ def findRMSE(df):
 
     return rmse_df
 
+def getDieboldMariano(df):
+    actual = df['GDP']
+    ar1 = df['AR(1)']
+    predictions = df.drop('GDP',axis=1)
+    diebold_mariano = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'Model Avg.':[]}
+    for col in predictions:
+        p_value, test_stat = dm_test(actual,ar1,predictions[col])
+        diebold_mariano[col] = [p_value,test_stat]
+    diebold_mariano_df = pd.DataFrame(root_errors,index=['p-value','DM Test Stat']).T
+    diebold_mariano_df = rmse_df.sort_values(by=['RMSE','MAPE'])
+    return diebold_mariano_df
+
+
 if __name__ == '__main__':
     # Get predictions
     df = rollingWindow()
     # Display predictions
+    print('\n','PREDICTIONS')
     print(df)
+    df.to_csv('./Results/predictions.csv')
     # Calculate root-mean squared error and mean absolute error of predictions
-    print(findRMSE(df))
+    rmse = findRMSE(df)
+    print(rmse)
+    print('\n','ROOT MEAT-SQUARED ERROR and MEAN ABSOLUTE PERCENTAGE ERROR')
+    rmse.to_csv('./Results/rmse.csv')
+    # Perform the Diebold-Mariano Test to statistically identify forecast accuracy equivalence
+    print('\n','DIEBOLD-MARIANO TEST RESULTS')
+    diebold_mariano_results = getDieboldMariano(df)
+    print(diebold_mariano_results)
+    diebold_mariano_results.to_csv('./Results/diebold_mariano.csv')
