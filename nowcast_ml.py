@@ -226,7 +226,7 @@ def makePredictionDF(start_predict='2018-01-01',end_predict='2018-12-31'):
     return GDP.loc[start_predict:end_predict]
 
 
-def rollingWindow(start_predict='2020-07-01',end_predict='2020-12-31'):
+def rollingWindow(start_predict='2019-01-01',end_predict='2020-12-31'):
     """"
     Main function that performs nowcasting. This function uses a pseudo real-time estimation technique that expands the window of data available,
     training and testing each machine learning model on all the data that was available up to that quarter.
@@ -330,6 +330,7 @@ def findRMSE(df):
 
     return rmse_df
 
+@ ignore_warnings (category=RuntimeWarning)
 def getDieboldMariano(df):
     actual = df['GDP']
     ar1 = df['AR(1)']
@@ -338,9 +339,9 @@ def getDieboldMariano(df):
     for col in predictions:
         p_value, test_stat = dm_test(actual,ar1,predictions[col])
         diebold_mariano[col] = [p_value,test_stat]
-    diebold_mariano_df = pd.DataFrame(root_errors,index=['p-value','DM Test Stat']).T
-    diebold_mariano_df = rmse_df.sort_values(by=['RMSE','MAPE'])
-    return diebold_mariano_df
+    diebold_mariano_df = pd.DataFrame(diebold_mariano,index=['p-value','DM Test Stat']).T
+    diebold_mariano_df = diebold_mariano_df.sort_values(by=['p-value','DM Test Stat'])
+    return diebold_mariano_df.dropna()
 
 
 if __name__ == '__main__':
@@ -351,9 +352,9 @@ if __name__ == '__main__':
     print(df)
     df.to_csv('./Results/predictions.csv')
     # Calculate root-mean squared error and mean absolute error of predictions
+    print('\n','ROOT MEAT-SQUARED ERROR and MEAN ABSOLUTE PERCENTAGE ERROR')
     rmse = findRMSE(df)
     print(rmse)
-    print('\n','ROOT MEAT-SQUARED ERROR and MEAN ABSOLUTE PERCENTAGE ERROR')
     rmse.to_csv('./Results/rmse.csv')
     # Perform the Diebold-Mariano Test to statistically identify forecast accuracy equivalence
     print('\n','DIEBOLD-MARIANO TEST RESULTS')
