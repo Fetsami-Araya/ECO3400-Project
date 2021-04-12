@@ -336,7 +336,8 @@ def getDieboldMariano(df):
     ar1 = df['AR(1)']
     predictions = df.drop('GDP',axis=1)
     diebold_mariano = {'LASSO':[],'Ridge':[],'Elastic Net':[],'Gradient Boosting':[],'Neural Net':[],'SVM':[],'Model Avg.':[]}
-    for col in predictions:
+    diebold_mariano_cols = ['LASSO','Ridge','Elastic Net','Gradient Boosting','Neural Net','SVM','Model Avg.']
+    for col in diebold_mariano_cols:
         test_stat, p_value = dm_test(actual,ar1,predictions[col])
         diebold_mariano[col] = [p_value,test_stat]
     diebold_mariano_df = pd.DataFrame(diebold_mariano,index=['p-value','DM Test Stat']).T
@@ -350,14 +351,14 @@ if __name__ == '__main__':
     # Display predictions
     print('\n','PREDICTIONS')
     print(df)
-    df.to_csv('./Results/predictions_sam.csv')
+    #df.to_csv('./Results/predictions_sam.csv')
     # Calculate root-mean squared error and mean absolute error of predictions
     print('\n','ROOT MEAT-SQUARED ERROR and MEAN ABSOLUTE PERCENTAGE ERROR')
     rmse = findRMSE(df)
     print(rmse)
-    rmse.to_csv('./Results/rmse_sam.csv')
+    #rmse.to_csv('./Results/rmse_sam.csv')
     # Perform the Diebold-Mariano Test to statistically identify forecast accuracy equivalence
     print('\n','DIEBOLD-MARIANO TEST RESULTS')
     diebold_mariano_results = getDieboldMariano(df)
     print(diebold_mariano_results)
-    diebold_mariano_results.to_csv('./Results/diebold_mariano_sam.csv')
+    #diebold_mariano_results.to_csv('./Results/diebold_mariano_sam.csv')
