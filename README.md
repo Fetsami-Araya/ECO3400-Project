@@ -10,7 +10,15 @@ Download the code as a ZIP file by clicking the green 'Clone or download' button
 
 ## File and folder description
 
-* `data/`: This folder will contain all our data. Datasets were compiled from a variety of sources listed below:
+* `data/`: This folder will contain all our data. Datasets were compiled from a variety of sources listed in the Data Sources section:
+* `Results/`: Folder that contains the results of our analysis.
+* `data_clean.py`: File
+* `Master Datasets/`: Folder that contains the csv *M-ACTUAL.csv* which contains the full set of training data used to train and test our models.
+* `nowcast_ml.py`: Main file that performs nowcasting.
+* `dm_test.py`: File from [Johnathan Tsang (2017.)](google.com) that performs the Diebold-Mariano (1995) Test.
+
+## Data Sources
+
 |              Variable             | Frequency | Earliest Year | Year End |    Span    | Lag |
 |:---------------------------------:|:---------:|:-------------:|:--------:|:----------:|:---:|
 | Real GDP (dependent variable)     | Quarterly |          1961 | 2020     | 59 years   |     |
@@ -36,12 +44,6 @@ Download the code as a ZIP file by clicking the green 'Clone or download' button
 | Median Age                        | Annually  |          1971 | 2020     | 49 years   | 1Y  |
 |                        Span Used: | Daily     |          1992 | 2020     | ~ 28 years |     |
 |                                   |           |               |          |            |     |
-
-* `Results/`: Folder that contains the results of our analysis.
-* `data_clean.py`: File
-* `Master Datasets/`: Folder that contains the csv *M-ACTUAL.csv* which contains the full set of training data used to train and test our models.
-* `nowcast_ml.py`: Main file that performs nowcasting.
-* `dm_test.py`: File from [Johnathan Tsang (2017.)](google.com) that performs the Diebold-Mariano (1995) Test.
 
 ## Required software and versioning
 TBD
