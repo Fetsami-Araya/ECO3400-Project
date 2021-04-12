@@ -350,14 +350,14 @@ if __name__ == '__main__':
     # Display predictions
     print('\n','PREDICTIONS')
     print(df)
-    df.to_csv('./Results/predictions_fetsami.csv')
+    df.to_csv('./Results/predictions_sam.csv')
     # Calculate root-mean squared error and mean absolute error of predictions
     print('\n','ROOT MEAT-SQUARED ERROR and MEAN ABSOLUTE PERCENTAGE ERROR')
     rmse = findRMSE(df)
     print(rmse)
-    rmse.to_csv('./Results/rmse_fetsami.csv')
+    rmse.to_csv('./Results/rmse_sam.csv')
     # Perform the Diebold-Mariano Test to statistically identify forecast accuracy equivalence
     print('\n','DIEBOLD-MARIANO TEST RESULTS')
     diebold_mariano_results = getDieboldMariano(df)
     print(diebold_mariano_results)
-    diebold_mariano_results.to_csv('./Results/diebold_mariano_fetsami.csv')
+    diebold_mariano_results.to_csv('./Results/diebold_mariano_sam.csv')
