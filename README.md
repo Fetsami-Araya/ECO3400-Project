@@ -46,7 +46,14 @@ Download the code as a ZIP file by clicking the green 'Clone or download' button
 |                                   |           |               |          |            |     |
 
 ## Required software and versioning
-TBD
+This code was tested with Python 3.7, 3.8, and 3.9
+
+The following are key dependencies. Any version of these packages that is compatible with the Python distributions above should work.
+* `numpy`
+* `pandas`
+* `sklearn`
+* `statsmodels`
+* `sklearn`
 
 
 ## References
