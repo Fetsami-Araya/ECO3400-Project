@@ -10,14 +10,14 @@ Download the code as a ZIP file by clicking the green 'Clone or download' button
 
 ## File and folder description
 
-* `data/`: This folder will contain all our data. Datasets were compiled from a variety of sources listed in the Data Sources section:
+* `data/`: This folder will contain all our data. Datasets were compiled from a variety of sources. The series used are listed in the Data section:
 * `Results/`: Folder that contains the results of our analysis.
 * `data_clean.py`: File
 * `Master Datasets/`: Folder that contains the csv *M-ACTUAL.csv* which contains the full set of training data used to train and test our models.
 * `nowcast_ml.py`: Main file that performs nowcasting.
-* `dm_test.py`: File from [Johnathan Tsang (2017.)](google.com) that performs the Diebold-Mariano (1995) Test.
+* `dm_test.py`: File from [Johnathan Tsang (2017.)](https://github.com/johntwk/Diebold-Mariano-Test) that performs the Diebold-Mariano (1995) Test.
 
-## Data Sources
+## Data
 
 |              Variable             | Frequency | Earliest Year | Year End |    Span    | Lag |
 |:---------------------------------:|:---------:|:-------------:|:--------:|:----------:|:---:|
@@ -48,3 +48,7 @@ Download the code as a ZIP file by clicking the green 'Clone or download' button
 ## Required software and versioning
 TBD
 
+
+## References
+
+Diebold, F. X. and Mariano, R. S. (1995), Comparing predictive accuracy, Journal of business & economic statistics 13(3), 253-264.
